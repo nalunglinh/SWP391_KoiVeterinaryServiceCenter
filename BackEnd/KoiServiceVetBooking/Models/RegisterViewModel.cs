@@ -1,0 +1,29 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace KoiServiceVetBooking.Models
+{
+    public class RegisterViewModel
+    {
+        [Required(ErrorMessage = "Your full name is required")]
+        [StringLength(50, MinimumLength = 5, ErrorMessage = "5 - 50 characters allowed")]
+        public string FullName { get; set; }
+
+        [Required(ErrorMessage = "Email is required")]
+        [MaxLength(100, ErrorMessage = "Max 100 characters allowed")]
+        [RegularExpression(@"^[^@\s]+@(gmail\.com|email\.com)$", ErrorMessage = "Email must be in a valid format")]
+        public string Email { get; set; }
+
+        [Required(ErrorMessage = "Phone number is required")]
+        [RegularExpression(@"^0\d{9,10}$", ErrorMessage = "Phone number must start with 0 and have 10-11 digits.")]
+        public string Phone { get; set; }
+
+        [Required(ErrorMessage = "Password is required")]
+        [StringLength(20, MinimumLength = 5, ErrorMessage = "5 - 20 characters allowed")]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        [Compare("Password", ErrorMessage = "Passwords do not match")]
+        [DataType(DataType.Password)]
+        public string ConfirmPassword { get; set; }
+    }
+}
