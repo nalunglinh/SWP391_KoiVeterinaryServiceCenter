@@ -8,7 +8,7 @@ namespace KoiServiceVetBooking.Models
     public class ServiceViewModel
     {
         public int ServiceId { get; set; }
-        public string ServiceName { get; set; }
-        public string Description { get; set; }
+        public required string ServiceName { get; set; }
+        public required string Description { get; set; }
     }
 }

@@ -81,7 +81,6 @@ namespace KoiServiceVetBooking.Controllers
 
             var userAddress = user.UserAddress ?? "Not updated yet";
 
-            // Tạo các claims
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Email),
@@ -121,7 +120,7 @@ namespace KoiServiceVetBooking.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Kiểm tra xem email tồn tại
+            // Kiểm tra email tồn tại
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
             if (user == null)
             {
@@ -153,32 +152,32 @@ namespace KoiServiceVetBooking.Controllers
             return Ok("Password reset successfully.");
         }
 
-        // Lấy thông tin người dùng
+        // Lấy thông tin user
         [HttpGet("profile")]
         [Authorize]
         public async Task<ActionResult<CustomerProfileViewModel>> Profile()
         {
-            // Kiểm tra xem người dùng đã đăng nhập chưa
+            // Kiểm tra đăng nhập
             if (!HttpContext.User.Identity!.IsAuthenticated)
             {
                 return Unauthorized("User is not authenticated.");
             }
 
-            // Lấy email từ claim của người dùng
+            // Lấy email
             var userEmail = User.FindFirstValue(ClaimTypes.Name);
             if (string.IsNullOrEmpty(userEmail))
             {
                 return Unauthorized("Email not found.");
             }
 
-            // Lấy thông tin người dùng từ cơ sở dữ liệu bằng email
+            // Lấy thông tin bằng email
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
             if (user == null)
             {
                 return NotFound("User not found.");
             }
 
-            // Chuyển thông tin người dùng vào ViewModel
+            // Chuyển thông tin vào ViewModel
             var customerProfileViewModel = new CustomerProfileViewModel
             {
                 FullName = user.FullName,
@@ -191,7 +190,7 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(customerProfileViewModel);
         }
 
-        // Cập nhật thông tin người dùng
+        // Cập nhật user
         [HttpPut("edit-profile")]
         [Authorize]
         public async Task<ActionResult<string>> EditProfile(CustomerProfileViewModel model)
@@ -213,8 +212,6 @@ namespace KoiServiceVetBooking.Controllers
             {
                 return NotFound("User not found.");
             }
-
-            // Cập nhật thông tin người dùng
             user.FullName = model.FullName;
             user.Email = model.Email;
             user.Dob = model.Dob;
