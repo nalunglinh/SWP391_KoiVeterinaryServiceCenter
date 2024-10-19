@@ -4161,11 +4161,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\nhata\\Downloads\\KoiServiceManagement\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj",
+      "projectUniqueName": "d:\\SWP\\Koi Veterinary Service\\SWP391_KoiVeterinaryServiceCenter\\BackEnd\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj",
       "projectName": "KoiServiceVetBooking",
-      "projectPath": "c:\\Users\\nhata\\Downloads\\KoiServiceManagement\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj",
+      "projectPath": "d:\\SWP\\Koi Veterinary Service\\SWP391_KoiVeterinaryServiceCenter\\BackEnd\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj",
       "packagesPath": "C:\\Users\\nhata\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\nhata\\Downloads\\KoiServiceManagement\\KoiServiceVetBooking\\obj\\",
+      "outputPath": "d:\\SWP\\Koi Veterinary Service\\SWP391_KoiVeterinaryServiceCenter\\BackEnd\\KoiServiceVetBooking\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

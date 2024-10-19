@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "6hECF8umygI=",
+  "dgSpecHash": "+ByDSowuI5k=",
   "success": true,
-  "projectFilePath": "C:\\Users\\nhata\\Downloads\\KoiServiceManagement\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj",
+  "projectFilePath": "D:\\SWP\\Koi Veterinary Service\\SWP391_KoiVeterinaryServiceCenter\\BackEnd\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\nhata\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\nhata\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

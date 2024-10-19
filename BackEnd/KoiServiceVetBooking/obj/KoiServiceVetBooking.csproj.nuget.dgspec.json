@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\nhata\\Downloads\\KoiServiceManagement\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj": {}
+    "D:\\SWP\\Koi Veterinary Service\\SWP391_KoiVeterinaryServiceCenter\\BackEnd\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj": {}
   },
   "projects": {
-    "C:\\Users\\nhata\\Downloads\\KoiServiceManagement\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj": {
+    "D:\\SWP\\Koi Veterinary Service\\SWP391_KoiVeterinaryServiceCenter\\BackEnd\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\nhata\\Downloads\\KoiServiceManagement\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj",
+        "projectUniqueName": "D:\\SWP\\Koi Veterinary Service\\SWP391_KoiVeterinaryServiceCenter\\BackEnd\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj",
         "projectName": "KoiServiceVetBooking",
-        "projectPath": "C:\\Users\\nhata\\Downloads\\KoiServiceManagement\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj",
+        "projectPath": "D:\\SWP\\Koi Veterinary Service\\SWP391_KoiVeterinaryServiceCenter\\BackEnd\\KoiServiceVetBooking\\KoiServiceVetBooking.csproj",
         "packagesPath": "C:\\Users\\nhata\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\nhata\\Downloads\\KoiServiceManagement\\KoiServiceVetBooking\\obj\\",
+        "outputPath": "D:\\SWP\\Koi Veterinary Service\\SWP391_KoiVeterinaryServiceCenter\\BackEnd\\KoiServiceVetBooking\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
