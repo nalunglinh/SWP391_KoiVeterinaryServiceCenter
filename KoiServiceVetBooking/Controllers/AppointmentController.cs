@@ -1,6 +1,6 @@
 using KoiServiceVetBooking.Entities;
 using KoiServiceVetBooking.Models;
-using KoiServiceVetBooking.Models.Appoinment;
+using KoiServiceVetBooking.Models.Appointment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +53,7 @@ namespace KoiServiceVetBooking.Controllers
                 ServiceId = model.ServiceId,
                 AppointmentDate = model.AppointmentDate,
                 Place = model.Place ?? "No address provided",
-                Status = "pending" // Mặc định trạng thái là 'pending'
+                Status = "pending" // Mặc định là 'pending'
             };
 
             // Lưu vào database

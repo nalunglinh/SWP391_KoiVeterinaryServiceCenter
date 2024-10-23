@@ -140,7 +140,7 @@ namespace KoiServiceVetBooking.Controllers
                 .Join(_context.DoctorSchedules,
                     ws => ws.ScheduleId,
                     ds => ds.ScheduleId,
-                    (ws, ds) => new
+                    (ws, ds) => new 
                     {
                         ws.ShiftDate,
                         ds.TimeFrom,
@@ -162,7 +162,8 @@ namespace KoiServiceVetBooking.Controllers
                     DayOfWeek = ds.DayOfWeek,
                     TimeFrom = ds.TimeFrom,
                     TimeTo = ds.TimeTo,
-                    ShiftDate = dw.ShiftDate
+                    ShiftDate = dw.ShiftDate,
+                    IsBooked = dw.IsBooked 
                 }).FirstOrDefault();
 
                 if (doctorProfile == null)
@@ -199,7 +200,7 @@ namespace KoiServiceVetBooking.Controllers
 
             if (workShift == null)
             {
-                return BadRequest("Khung giờ đéo khả dụng");
+                return BadRequest("the time for work is invalid");
             }
 
             workShift.IsBooked = true;

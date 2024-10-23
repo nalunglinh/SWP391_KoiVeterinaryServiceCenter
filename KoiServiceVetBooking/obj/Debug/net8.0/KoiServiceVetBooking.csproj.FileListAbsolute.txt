@@ -143,3 +143,4 @@ D:\Koi\KoiServiceManagement\KoiServiceVetBooking\obj\Debug\net8.0\refint\KoiServ
 D:\Koi\KoiServiceManagement\KoiServiceVetBooking\obj\Debug\net8.0\KoiServiceVetBooking.pdb
 D:\Koi\KoiServiceManagement\KoiServiceVetBooking\obj\Debug\net8.0\KoiServiceVetBooking.genruntimeconfig.cache
 D:\Koi\KoiServiceManagement\KoiServiceVetBooking\obj\Debug\net8.0\ref\KoiServiceVetBooking.dll
+D:\Koi\KoiServiceManagement\KoiServiceVetBooking\obj\Debug\net8.0\KoiServiceVetBooking.sourcelink.json

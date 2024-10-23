@@ -14,7 +14,6 @@ namespace BookingVetKoi
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddControllers();
-            builder.Services.AddSingleton<EmailService>();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {

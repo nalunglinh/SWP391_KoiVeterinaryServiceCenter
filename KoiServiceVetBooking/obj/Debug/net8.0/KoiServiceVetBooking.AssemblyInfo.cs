@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KoiServiceVetBooking")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+96747cfb5710808d166ec5efb67fbbfe01e6012a")]
 [assembly: System.Reflection.AssemblyProductAttribute("KoiServiceVetBooking")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KoiServiceVetBooking")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
