@@ -18,8 +18,10 @@ namespace KoiServiceVetBooking.Entities
 
         public required string Description { get; set; }
 
-        public double Price { get; set; }
+        public decimal Price { get; set; }
 
-        public double Surcharge { get; set; }
+        public decimal Surcharge { get; set; }
+
+         public ICollection<Appointment> Appointments { get; set; }
     }
 }

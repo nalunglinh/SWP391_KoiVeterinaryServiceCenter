@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KoiServiceVetBooking.Entities
 {
-    public class DoctorWorkshift
+   public class DoctorWorkshift
     {
         [Key]
         [Column("workshift_id")]
@@ -21,9 +21,14 @@ namespace KoiServiceVetBooking.Entities
 
         [Column("Shift_date")]
         public DateTime ShiftDate { get; set; }
+        
         public bool IsBooked { get; set; }
 
-        public required DoctorSchedule schedule_id { get; set; }
-        public required UserAccount doctor_id { get; set; }
+        // Khai báo mối quan hệ với DoctorSchedule
+        public virtual DoctorSchedule DoctorSchedule { get; set; }
+
+        // Khai báo mối quan hệ với UserAccount (Doctor)
+        public virtual UserAccount Doctor { get; set; }
     }
+
 }

@@ -1,6 +1,7 @@
 using KoiServiceVetBooking.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace BookingVetKoi
 {
@@ -24,7 +25,10 @@ namespace BookingVetKoi
 
             // Cấu hình Swagger/OpenAPI
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Koi Veterinary Service API", Version = "v1" });
+            });
 
             var app = builder.Build();
 
@@ -32,16 +36,24 @@ namespace BookingVetKoi
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+                    c.RoutePrefix = string.Empty;
+                });
             }
 
-            app.UseHttpsRedirection();
+            // Kích hoạt HTTPS
+            //app.UseHttpsRedirection();
 
+            // Kích hoạt xác thực và ủy quyền
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Map các Controllers
             app.MapControllers();
 
+            // Chạy ứng dụng
             app.Run();
         }
     }

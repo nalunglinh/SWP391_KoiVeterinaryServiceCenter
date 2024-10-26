@@ -23,7 +23,6 @@ namespace KoiServiceVetBooking.Controllers
 
         //Create lịch hẹn 
         [HttpPost("create-appointment")]
-        [Authorize(Roles = "Customer")]
         public async Task<ActionResult> CreateAppointment(CreateAppointmentViewModel model)
         {
             if (!ModelState.IsValid)
@@ -53,35 +52,44 @@ namespace KoiServiceVetBooking.Controllers
                 ServiceId = model.ServiceId,
                 AppointmentDate = model.AppointmentDate,
                 Place = model.Place ?? "No address provided",
-                Status = "pending" // Mặc định là 'pending'
+                Status = "pending" // Mặc định trạng thái là 'pending'
             };
 
             // Lưu vào database
             await _context.Appointments.AddAsync(appointment);
             await _context.SaveChangesAsync();
 
-            return Ok("Appointment created successfully.");
+            return Ok(new { message = "Appointment created successfully.", appointmentId = appointment.AppointmentId });
+
         }
 
         //lấy list lịch hẹn
         [HttpGet("List-appointment")]
-        public async Task<ActionResult<List<Appointment>>> GetAppointments(int? customerId, int? doctorId)
+        public async Task<ActionResult<List<Appointment>>> GetAppointments(int? appointmentId)
         {
-            var query = _context.Appointments.AsQueryable();
 
-            if (customerId.HasValue)
+            var query = _context.Appointments
+                .Include(a => a.Customer)
+                .Include(a => a.Doctor)
+                .Include(a => a.Service);
+
+
+            if (appointmentId.HasValue)
             {
-                query = query.Where(a => a.CustomerId == customerId);
+                var appointment = await query
+                    .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
+                if (appointment == null)
+                {
+                    return NotFound();
+                }
+                return Ok(new List<Appointment> { appointment }); // Trả về danh sách với một phần tử
             }
 
-            if (doctorId.HasValue)
-            {
-                query = query.Where(a => a.DoctorId == doctorId);
-            }
-
+            // Nếu không có appointmentId, lấy tất cả các cuộc hẹn
             var appointments = await query.ToListAsync();
             return Ok(appointments);
         }
+
 
         //lấy chi tiết lịch hẹn
         [HttpGet("Detail/{appointmentId}")]
@@ -97,17 +105,22 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(appointment);
         }
 
-        //Update lịch hẹn
-        [HttpPut("Update/{appointmentId}")]
+        //Update trạng thái đặt hẹn
+        [HttpPut("Update/status/{appointmentId}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> UpdateAppointment(int appointmentId, Appointment updatedAppointment)
+        public async Task<ActionResult> UpdateStatusAppointment(int appointmentId, Appointment appointment)
         {
-            if (appointmentId != updatedAppointment.AppointmentId)
+            if (appointmentId != appointment.AppointmentId)
             {
                 return BadRequest("ID lịch hẹn không khớp.");
             }
 
-            _context.Entry(updatedAppointment).State = EntityState.Modified;
+            if (appointment.Status == "Pending")
+            {
+                appointment.Status = "Paid"; // Cập nhật trạng thái
+            }
+
+            _context.Entry(appointment).State = EntityState.Modified;
 
             try
             {
@@ -127,7 +140,6 @@ namespace KoiServiceVetBooking.Controllers
 
         //delete lịch hẹn
         [HttpDelete("Delete/{appointmentId}")]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteAppointment(int appointmentId)
         {
             var appointment = await _context.Appointments.FindAsync(appointmentId);

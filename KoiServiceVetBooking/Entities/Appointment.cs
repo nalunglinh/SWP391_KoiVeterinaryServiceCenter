@@ -9,13 +9,13 @@ namespace KoiServiceVetBooking.Entities
         [Column("appointment_id")]
         public int AppointmentId { get; set; }
 
-        [ForeignKey("customer_id")]
+        [Column("customer_id")]
         public required int CustomerId { get; set; }
 
-        [ForeignKey("doctor_id")]
+        [Column("doctor_id")]
         public required int DoctorId { get; set; }
 
-        [ForeignKey("service_id")]
+        [Column("service_id")]
         public required int ServiceId { get; set; }
 
         [Column("Appointment_date")]
@@ -31,9 +31,14 @@ namespace KoiServiceVetBooking.Entities
 
         public string? Feedback { get; set; }
 
-        // public required UserAccount Customer_id { get; set; }
-        // public required UserAccount Doctor_id { get; set; }
-        // public required Service service_id { get; set; }
+        // Các mối quan hệ
+        [ForeignKey("CustomerId")]
+        public virtual UserAccount Customer { get; set; }
+
+        [ForeignKey("DoctorId")]
+        public virtual UserAccount Doctor { get; set; }
+
+        [ForeignKey("ServiceId")]
+        public virtual Service Service { get; set; }
     }
-        
 }

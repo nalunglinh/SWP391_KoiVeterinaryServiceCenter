@@ -20,8 +20,8 @@ namespace KoiServiceVetBooking.Controllers
             _context = appDbContext;
         }
 
-        // Đăng ký tài khoản mới (chỉ có thể là customer - admin và doctor được cấp tài khoản sẵn)
-        [HttpPost("Register")]
+        // Đăng ký tài khoản mới
+        [HttpPost("register")]
         public async Task<ActionResult<string>> Registration(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
@@ -29,7 +29,7 @@ namespace KoiServiceVetBooking.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Kiểm tra xem email đã tồn tại trong CSDL hay chưa
+            // Kiểm tra xem email đã tồn tại trong cơ sở dữ liệu hay chưa
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
             if (existingUser != null)
             {
@@ -44,7 +44,7 @@ namespace KoiServiceVetBooking.Controllers
                 Password = model.Password,
                 Phone = model.Phone,
                 role = "Customer", // role mặc định là Customer
-                Status = "valid" //tkhoan mặc định khi đki là còn sử dụng (valid)
+                Status = "valid" // Tài khoản mặc định là hợp lệ
             };
 
             try
@@ -62,7 +62,7 @@ namespace KoiServiceVetBooking.Controllers
         }
 
         // Đăng nhập
-        [HttpPost("Login")]
+        [HttpPost("login")]
         public async Task<ActionResult<string>> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
@@ -104,7 +104,7 @@ namespace KoiServiceVetBooking.Controllers
         }
 
         // Đăng xuất
-        [HttpPost("Logout")]
+        [HttpPost("logout")]
         public async Task<ActionResult<string>> LogOut()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -112,7 +112,7 @@ namespace KoiServiceVetBooking.Controllers
         }
 
         // Quên mật khẩu
-        [HttpPost("Forgot-password")]
+        [HttpPost("forgot-password")]
         public async Task<ActionResult<string>> ForgotPassword(ForgotPasswordViewModel model)
         {
             if (!ModelState.IsValid)
@@ -127,12 +127,12 @@ namespace KoiServiceVetBooking.Controllers
                 return NotFound("Email does not exist.");
             }
 
-            // Chuyển đến trang reset password nếu ok
+            // Chuyển đến trang reset password nếu ok (Chỉ trả về thông điệp cho API)
             return Ok("Please check your email to reset your password.");
         }
 
         // Reset mật khẩu
-        [HttpPost("Reset-password")]
+        [HttpPost("reset-password")]
         public async Task<ActionResult<string>> ResetPassword(ResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)
@@ -152,5 +152,74 @@ namespace KoiServiceVetBooking.Controllers
             return Ok("Password reset successfully.");
         }
 
+        // Lấy thông tin user
+        [HttpGet("profile")]
+        [Authorize]
+        public async Task<ActionResult<CustomerProfileViewModel>> Profile()
+        {
+            // Kiểm tra đăng nhập
+            if (!HttpContext.User.Identity!.IsAuthenticated)
+            {
+                return Unauthorized("User is not authenticated.");
+            }
+
+            // Lấy email
+            var userEmail = User.FindFirstValue(ClaimTypes.Name);
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return Unauthorized("Email not found.");
+            }
+
+            // Lấy thông tin bằng email
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Chuyển thông tin vào ViewModel
+            var customerProfileViewModel = new CustomerProfileViewModel
+            {
+                FullName = user.FullName,
+                Email = user.Email,
+                Phone = user.Phone,
+                UserAddress = user.UserAddress ?? "No address provided",
+                Dob = user.Dob
+            };
+
+            return Ok(customerProfileViewModel);
+        }
+
+        // Cập nhật user
+        [HttpPut("edit-profile")]
+        [Authorize]
+        public async Task<ActionResult<string>> EditProfile(CustomerProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User ID not found.");
+            }
+
+            var userId = int.Parse(userIdClaim);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+            user.Dob = model.Dob;
+            user.Phone = model.Phone;
+            user.UserAddress = model.UserAddress;
+
+            await _context.SaveChangesAsync();
+            return Ok("Profile updated successfully.");
+        }
     }
 }

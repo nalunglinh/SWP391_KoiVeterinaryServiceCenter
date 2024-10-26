@@ -14,5 +14,8 @@ namespace KoiServiceVetBooking.Entities
         public TimeSpan TimeFrom { get; set; }
         [Column("Time_to")]
         public TimeSpan TimeTo { get; set; }
+
+         public DoctorSchedule Schedule { get; set; }
+         public required UserAccount doctor_id { get; set; }
     }
 }
