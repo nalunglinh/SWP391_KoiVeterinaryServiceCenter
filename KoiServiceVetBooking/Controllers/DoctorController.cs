@@ -43,48 +43,7 @@ namespace KoiServiceVetBooking.Controllers
             _context.Users.Add(doctor);
             await _context.SaveChangesAsync();
 
-            // Lấy ID của bác sĩ mới tạo
-            int doctorId = doctor.UserId;
-
-            // Danh sách các ngày trong tuần mà bác sĩ làm việc
-            var workDays1 = new List<string> { "Monday", "Wednesday", "Friday" };
-            var workDays2 = new List<string> { "Tuesday", "Thursday", "Saturday" };
-
-            DateTime startDate = DateTime.Today;
-
-            // Thêm ca làm việc vào bảng DoctorWorkshift cho từng ngày trong danh sách workDays1 và workDays2
-            foreach (var day in workDays1.Concat(workDays2))
-            {
-                // Lấy lịch trình làm việc từ DoctorSchedules dựa trên DayOfWeek
-                var schedule = await _context.DoctorSchedules
-                    .FirstOrDefaultAsync(s => s.DayOfWeek == day);
-
-                if (schedule != null)
-                {
-                    // Tạo ca làm việc cho từng ngày
-                    var workshift = new DoctorWorkshift
-                    {
-                        DoctorId = doctorId,
-                        ScheduleId = schedule.ScheduleId,
-                        ShiftDate = GetNextDateForDay(startDate, day),
-                        IsBooked = false,
-                        DoctorSchedule = schedule,
-                        Doctor = doctor
-                    };
-
-                    _context.DoctorWorkshift.Add(workshift);
-                }
-            }
-            await _context.SaveChangesAsync();
-
-            return Ok("Doctor created successfully with multiple shifts.");
-        }
-
-        private DateTime GetNextDateForDay(DateTime startDate, string dayOfWeek)
-        {
-            DayOfWeek targetDay = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), dayOfWeek);
-            int daysUntilTarget = ((int)targetDay - (int)startDate.DayOfWeek + 7) % 7;
-            return startDate.AddDays(daysUntilTarget);
+            return Ok("Doctor created successfully");
         }
 
         //tạo workshift cho doctor
@@ -102,7 +61,6 @@ namespace KoiServiceVetBooking.Controllers
             // Lặp qua các ngày trong tuần được chỉ định
             foreach (var day in model.DaysOfWeek)
             {
-                // Khởi tạo ngày làm việc bắt đầu từ ShiftDate
                 DateTime shiftDate = model.ShiftDate;
 
                 // Cập nhật ngày làm việc dựa trên ngày trong tuần
@@ -154,8 +112,7 @@ namespace KoiServiceVetBooking.Controllers
 
          // chỉnh sửa Doctor
         [HttpPut("Profile/Update/{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> UpdateDoctor(int id, DoctorProfileViewModel model)
+        public async Task<ActionResult> UpdateDoctor(int id, int workshiftId, DoctorEditViewModel model)
         {
             var doctor = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id && u.role == "Doctor");
             if (doctor == null)
@@ -168,13 +125,25 @@ namespace KoiServiceVetBooking.Controllers
             doctor.Phone = model.Phone;
             doctor.UserAddress = model.UserAddress;
 
+            // Tìm lịch làm việc
+            var workshift = await _context.DoctorWorkshift.FirstOrDefaultAsync(ws => ws.WorkshiftId == workshiftId && ws.DoctorId == id);
+            if (workshift != null)
+            {
+                // Cập nhật thông tin lịch làm việc
+                workshift.ShiftDate = model.ShiftDate;
+                workshift.IsBooked = model.IsBooked;
+            }
+            else
+            {
+                return NotFound("Workshift not found.");
+            }
+
             await _context.SaveChangesAsync();
             return Ok("Doctor updated successfully.");
         }
 
         // xóa Doctor
         [HttpDelete("Profile/Delete/{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteDoctor(int id)
         {
             var doctor = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id && u.role == "Doctor");
@@ -182,6 +151,10 @@ namespace KoiServiceVetBooking.Controllers
             {
                 return NotFound("Doctor not found.");
             }
+
+            // Tìm và xóa các workshift liên quan
+            var workshifts = _context.DoctorWorkshift.Where(ws => ws.DoctorId == id);
+            _context.DoctorWorkshift.RemoveRange(workshifts);
 
             _context.Users.Remove(doctor);
             await _context.SaveChangesAsync();
@@ -208,7 +181,7 @@ namespace KoiServiceVetBooking.Controllers
         }
 
         //thông tin bác sĩ và thời gian làm việc
-        [HttpGet("Doctor/Profile/{doctorId}")]
+        [HttpGet("Profile/{doctorId}")]
         public ActionResult<DoctorProfileViewModel> GetDoctorProfile(int doctorId, DateTime ShiftDate)
         {
             var doctor = _context.Users.FirstOrDefault(u => u.UserId == doctorId);
@@ -257,7 +230,7 @@ namespace KoiServiceVetBooking.Controllers
         }
 
         //List lịch làm việc available
-        [HttpGet("Doctor/Workshift/{doctorId}")]
+        [HttpGet("Workshift/{doctorId}")]
         public ActionResult<List<DoctorWorkshift>> GetAvailableWorkshifts(int doctorId)
         {
             var workshifts = _context.DoctorWorkshift
@@ -268,7 +241,7 @@ namespace KoiServiceVetBooking.Controllers
         }
 
         //book lịch hẹn với bác sĩ
-        [HttpPost("Doctor/Appointment/{doctorId}")]
+        [HttpPost("Booking/{doctorId}")]
         public ActionResult<DoctorListViewModel> Book(int doctorId)
         {
             // Tìm bác sĩ

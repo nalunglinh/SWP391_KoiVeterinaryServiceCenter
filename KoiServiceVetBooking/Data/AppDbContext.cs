@@ -24,8 +24,8 @@ namespace KoiServiceVetBooking.Entities
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<DoctorWorkshift>()
-       .HasKey(dw => dw.WorkshiftId);
+
+            modelBuilder.Entity<DoctorWorkshift>().HasKey(dw => dw.WorkshiftId);
 
             modelBuilder.Entity<DoctorWorkshift>()
                 .HasOne(dw => dw.Doctor) // Chỉ định mối quan hệ với Doctor
@@ -38,6 +38,7 @@ namespace KoiServiceVetBooking.Entities
                 .WithMany() // Nếu một lịch có nhiều workshifts
                 .HasForeignKey(dw => dw.ScheduleId)
                 .OnDelete(DeleteBehavior.Cascade); // Hành động khi xóa
+        
         }
     }
 }
