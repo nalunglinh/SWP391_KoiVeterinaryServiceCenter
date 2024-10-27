@@ -28,6 +28,11 @@ namespace KoiServiceVetBooking.Controllers
                 return BadRequest(ModelState);
             }
 
+            if (model.ServiceId < 1 || model.ServiceId > 3)
+            {
+                return BadRequest("ServiceId must be 1, 2, or 3.");
+            }
+
             // Tạo tài khoản bác sĩ
             var doctor = new UserAccount
             {
@@ -41,6 +46,16 @@ namespace KoiServiceVetBooking.Controllers
             };
 
             _context.Users.Add(doctor);
+            await _context.SaveChangesAsync();
+
+            //chỉ định doctor và dịch vụ 
+            var doctorService = new DoctorService
+            {
+                DoctorId = doctor.UserId,
+                ServiceId = model.ServiceId
+            };
+
+            _context.DoctorsServices.Add(doctorService);
             await _context.SaveChangesAsync();
 
             return Ok("Doctor created successfully");

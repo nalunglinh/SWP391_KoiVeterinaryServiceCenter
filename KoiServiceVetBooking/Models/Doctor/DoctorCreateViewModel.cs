@@ -20,5 +20,6 @@ namespace KoiServiceVetBooking.Models.Doctor
         public string? UserAddress { get; set; }
 
         public bool IsBooked { get; set; } = false; //mặc định false
+        public int ServiceId { get; set; }
     }
 }

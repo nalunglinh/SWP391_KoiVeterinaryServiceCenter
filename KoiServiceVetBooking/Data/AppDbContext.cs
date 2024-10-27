@@ -19,6 +19,7 @@ namespace KoiServiceVetBooking.Entities
         public DbSet<History> ServiceHistories { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Bills> Bills { get; set; }
+        public DbSet<DoctorService> DoctorsServices { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

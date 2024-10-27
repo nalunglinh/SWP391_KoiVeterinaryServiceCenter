@@ -11,11 +11,14 @@ namespace BookingVetKoi
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Cấu hình DbContext
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // Thêm dịch vụ cho Controllers
             builder.Services.AddControllers();
 
+            // Cấu hình Authentication
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
                 options.LoginPath = "/api/account/login";
@@ -30,6 +33,16 @@ namespace BookingVetKoi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Koi Veterinary Service API", Version = "v1" });
             });
 
+            // Thêm dịch vụ CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    policy => policy.AllowAnyOrigin()
+                                    .AllowAnyMethod()
+                                    .AllowAnyHeader());
+            });
+
+            // Xây dựng ứng dụng
             var app = builder.Build();
 
             // Cấu hình HTTP request pipeline
@@ -43,8 +56,8 @@ namespace BookingVetKoi
                 });
             }
 
-            // Kích hoạt HTTPS
-            //app.UseHttpsRedirection();
+            // Sử dụng CORS
+            app.UseCors("AllowAllOrigins");
 
             // Kích hoạt xác thực và ủy quyền
             app.UseAuthentication();
