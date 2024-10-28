@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using KoiServiceVetBooking.Models.Payment;
+using KoiServiceVetBooking.Models.HIstory;
 
 namespace KoiServiceVetBooking.Controllers
 {
@@ -21,6 +23,71 @@ namespace KoiServiceVetBooking.Controllers
         public PaymentController(AppDbContext appDbContext)
         {
             _context = appDbContext;
+        }
+
+        //tạo payment và lưu vào history
+        [HttpPost("create")]
+        public async Task<IActionResult> CreatePayment(PaymentCreateViewModel model)
+        {
+            var service = await _context.Services.FindAsync(model.ServiceId);
+            if (service == null)
+            {
+                return BadRequest("Service not found.");
+            }
+
+            // Calculate surcharge based on service type and visit preference
+            decimal surcharge = 0;
+            if (model.ServiceId == 2)
+            {
+                surcharge = service.Surcharge;
+            }
+            else if (model.ServiceId == 3 && model.IsHomeVisit)
+            {
+                surcharge = service.Surcharge;
+            }
+
+            // Calculate the total amount
+            var amount = service.Price + surcharge;
+
+            var payment = new Payment
+            {
+                CustomerId = model.CustomerId,
+                AppointmentId = model.AppointmentId,
+                PaymentMethod = model.PaymentMethod,
+                Amount = amount,
+                PaymentDate = DateTime.Now,
+                PaymentStatus = "Pending",
+                IsHomeVisit = model.IsHomeVisit 
+            };
+
+            _context.Payments.Add(payment);
+            await _context.SaveChangesAsync();
+
+            var serviceHistory = new History
+            {
+                PaymentId = payment.PaymentId,
+                CustomerId = model.CustomerId,
+                ServiceId = model.ServiceId,
+                AppointmentId = model.AppointmentId
+            };
+
+
+            _context.ServiceHistory.Add(serviceHistory);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetPaymentById), new { id = payment.PaymentId }, payment);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPaymentById(int id)
+        {
+            var payment = await _context.Payments.FindAsync(id);
+            if (payment == null)
+            {
+                return NotFound("Payment not found.");
+            }
+
+            return Ok(payment);
         }
 
         // Hàm tạo mã QR giả lập

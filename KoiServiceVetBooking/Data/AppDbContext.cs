@@ -16,7 +16,7 @@ namespace KoiServiceVetBooking.Entities
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Rating> Rating { get; set; }
         public DbSet<Feedback> ServiceFeedbacks { get; set; }
-        public DbSet<History> ServiceHistories { get; set; }
+        public DbSet<History> ServiceHistory { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Bills> Bills { get; set; }
         public DbSet<DoctorService> DoctorsServices { get; set; }
@@ -30,15 +30,21 @@ namespace KoiServiceVetBooking.Entities
 
             modelBuilder.Entity<DoctorWorkshift>()
                 .HasOne(dw => dw.Doctor) // Chỉ định mối quan hệ với Doctor
-                .WithMany() // Nếu một bác sĩ có nhiều workshifts
+                .WithMany()
                 .HasForeignKey(dw => dw.DoctorId)
-                .OnDelete(DeleteBehavior.Cascade); // Hành động khi xóa
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<DoctorWorkshift>()
                 .HasOne(dw => dw.DoctorSchedule) // Chỉ định mối quan hệ với DoctorSchedule
-                .WithMany() // Nếu một lịch có nhiều workshifts
+                .WithMany()
                 .HasForeignKey(dw => dw.ScheduleId)
-                .OnDelete(DeleteBehavior.Cascade); // Hành động khi xóa
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            modelBuilder.Entity<DoctorService>()
+                .HasOne(ds => ds.Doctor)
+                .WithMany()
+                .HasForeignKey(ds => ds.DoctorId)
+                .OnDelete(DeleteBehavior.Cascade); 
         
         }
     }

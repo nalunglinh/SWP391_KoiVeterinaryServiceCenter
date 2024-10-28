@@ -20,12 +20,24 @@ namespace KoiServiceVetBooking.Controllers
             _context = appDbcontext;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<History>> GetServiceHistoryById(int id)
+        {
+            var serviceHistory = await _context.ServiceHistory.FindAsync(id);
+            if (serviceHistory == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(serviceHistory);
+        }
+
         //Lấy danh sách tất cả các lịch sử giao dịch
         [HttpGet("Customer/{customerId}")]
         public async Task<ActionResult<HistoryViewModel>> GetHistoryByCustomerId(int customerId)
         {
             // Tìm lịch sử giao dịch cho customer
-            var history = await _context.ServiceHistories.Where(h => h.CustomerId == customerId)
+            var history = await _context.ServiceHistory.Where(h => h.CustomerId == customerId)
                 .Select(h => new HistoryViewModel
                 {
                     PaymentId = h.PaymentId,
@@ -52,7 +64,7 @@ namespace KoiServiceVetBooking.Controllers
         public async Task<ActionResult<HistoryViewModel>> GetHistoryDetails(int historyId, int customerId)
         {
             // Tìm chi tiết lịch sử giao dịch cho customer theo historyId
-            var history = await _context.ServiceHistories
+            var history = await _context.ServiceHistory
                 .Where(h => h.HistoryId == historyId && h.CustomerId == customerId)
                 .Select(h => new HistoryViewModel
                 {
@@ -102,7 +114,7 @@ namespace KoiServiceVetBooking.Controllers
                 AppointmentId = model.AppointmentId
             };
 
-            _context.ServiceHistories.Add(history);
+            _context.ServiceHistory.Add(history);
             await _context.SaveChangesAsync();
 
             return Ok("Transaction history created successfully");
@@ -112,7 +124,7 @@ namespace KoiServiceVetBooking.Controllers
         [HttpDelete("DeleteHistory/{historyId}/Customer/{customerId}")]
         public async Task<ActionResult> DeleteHistory(int historyId, int customerId)
         {
-            var history = await _context.ServiceHistories
+            var history = await _context.ServiceHistory
                 .FirstOrDefaultAsync(h => h.HistoryId == historyId && h.CustomerId == customerId);
 
             if (history == null)
@@ -120,7 +132,7 @@ namespace KoiServiceVetBooking.Controllers
                 return NotFound("No transaction history found for this customer");
             }
 
-            _context.ServiceHistories.Remove(history);
+            _context.ServiceHistory.Remove(history);
             await _context.SaveChangesAsync();
 
             return Ok("Transaction history has been successfully deleted");

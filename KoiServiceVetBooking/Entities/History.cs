@@ -13,16 +13,16 @@ namespace KoiServiceVetBooking.Entities
         [Column("history_id")]
         public int HistoryId { get; set; }
 
-        [ForeignKey("Payment")]
+        [Column("payment_id")]
         public int PaymentId { get; set; }
         
-        [ForeignKey("Customer")]
+        [Column("customer_id")]
         public int CustomerId { get; set; }
         
-        [ForeignKey("Service")]
+        [Column("service_id")]
         public int ServiceId { get; set; }
         
-        [ForeignKey("Appointment")]
+        [Column("appointment_id")]
         public int AppointmentId { get; set; }
 
         public UserAccount Customer { get; set; }

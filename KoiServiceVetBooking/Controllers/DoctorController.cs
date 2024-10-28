@@ -171,6 +171,10 @@ namespace KoiServiceVetBooking.Controllers
             var workshifts = _context.DoctorWorkshift.Where(ws => ws.DoctorId == id);
             _context.DoctorWorkshift.RemoveRange(workshifts);
 
+            // Xóa các bản ghi liên quan trong DoctorsServices trước khi xóa Doctor
+            var doctorServices = _context.DoctorsServices.Where(ds => ds.DoctorId == id);
+            _context.DoctorsServices.RemoveRange(doctorServices);
+
             _context.Users.Remove(doctor);
             await _context.SaveChangesAsync();
             return Ok("Doctor deleted successfully.");
@@ -191,6 +195,42 @@ namespace KoiServiceVetBooking.Controllers
                     UserAddress = s.UserAddress ?? "Unknown doctor address",
                 })
                 .ToList();
+
+            return Ok(doctors);
+        }
+
+        // Get all doctors
+        [HttpGet("All-of-Doctors")]
+        public async Task<ActionResult<List<DoctorListViewModel>>> ListAllDoctors()
+        {
+            var doctors = await _context.Users
+                .Where(u => u.role == "Doctor")
+                .Select(s => new DoctorListViewModel
+                {
+                    DoctorId = s.UserId,
+                    FullName = s.FullName,
+                    Email = s.Email,
+                    UserAddress = s.UserAddress ?? "Unknown doctor address",
+                })
+                .ToListAsync();
+
+            return Ok(doctors);
+        }
+
+        // Get doctors by service
+        [HttpGet("List-by-Service/{serviceId}")]
+        public async Task<ActionResult<List<DoctorListViewModel>>> ListDoctorsByService(int serviceId)
+        {
+            var doctors = await _context.DoctorsServices
+                .Where(ds => ds.ServiceId == serviceId)
+                .Select(ds => new DoctorListViewModel
+                {
+                    DoctorId = ds.Doctor.UserId,
+                    FullName = ds.Doctor.FullName,
+                    Email = ds.Doctor.Email,
+                    UserAddress = ds.Doctor.UserAddress ?? "Unknown doctor address",
+                })
+                .ToListAsync();
 
             return Ok(doctors);
         }
@@ -257,7 +297,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //book lịch hẹn với bác sĩ
         [HttpPost("Booking/{doctorId}")]
-        public ActionResult<DoctorListViewModel> Book(int doctorId)
+        public ActionResult<DoctorListViewModel> Book(int doctorId, int workshiftId)
         {
             // Tìm bác sĩ
             var doctor = _context.Users.FirstOrDefault(s => s.UserId == doctorId);
@@ -266,12 +306,12 @@ namespace KoiServiceVetBooking.Controllers
                 return NotFound();
             }
 
-            var workShift = _context.DoctorWorkshift
-                .FirstOrDefault(dw => dw.DoctorId == doctorId && !dw.IsBooked);
+             var workShift = _context.DoctorWorkshift.FirstOrDefault(ws => 
+                ws.DoctorId == doctorId && ws.WorkshiftId == workshiftId && !ws.IsBooked);
 
             if (workShift == null)
             {
-                return BadRequest("the time for work is invalid");
+                return BadRequest("The specified work shift is not available.");
             }
 
             workShift.IsBooked = true;
