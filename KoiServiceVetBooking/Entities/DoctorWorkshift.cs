@@ -22,7 +22,7 @@ namespace KoiServiceVetBooking.Entities
         [Column("Shift_date")]
         public DateTime ShiftDate { get; set; }
         
-        public bool IsBooked { get; set; }
+        public bool IsBooked { get; set; } = false;
 
         // Khai báo mối quan hệ với DoctorSchedule
         public virtual DoctorSchedule DoctorSchedule { get; set; }

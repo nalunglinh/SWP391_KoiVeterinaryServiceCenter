@@ -22,7 +22,6 @@ namespace KoiServiceVetBooking.Controllers
 
         // tạo feedback
         [HttpPost("Submit-Feedback")]
-        [Authorize(Roles = "Customer")]
         public IActionResult SubmitFeedback([FromBody] FeedbackViewModel feedback)
         {
             if (!ModelState.IsValid)
@@ -45,7 +44,7 @@ namespace KoiServiceVetBooking.Controllers
                 CustomerId = feedback.customerId
             };
 
-            _context.ServiceFeedbacks.Add(serviceFeedback);
+            _context.ServiceFeedback.Add(serviceFeedback);
             _context.SaveChanges();
 
             var service = _context.Services.FirstOrDefault(s => s.ServiceId == feedback.ServiceId);
@@ -78,15 +77,14 @@ namespace KoiServiceVetBooking.Controllers
         [HttpGet("GetList")]
         public async Task<ActionResult<IEnumerable<Feedback>>> GetAllFeedbacks()
         {
-            return await _context.ServiceFeedbacks.ToListAsync();
+            return await _context.ServiceFeedback.ToListAsync();
         }
 
         // tìm feedback theo id
         [HttpGet("FindFeedback/{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Feedback>> GetFeedback(int id)
         {
-            var feedback = await _context.ServiceFeedbacks.FindAsync(id);
+            var feedback = await _context.ServiceFeedback.FindAsync(id);
 
             if (feedback == null)
             {
@@ -98,16 +96,15 @@ namespace KoiServiceVetBooking.Controllers
 
         // Xóa feedback
         [HttpDelete("Delete/{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteFeedback(int id)
         {
-            var feedback = await _context.ServiceFeedbacks.FindAsync(id);
+            var feedback = await _context.ServiceFeedback.FindAsync(id);
             if (feedback == null)
             {
                 return NotFound();
             }
 
-            _context.ServiceFeedbacks.Remove(feedback);
+            _context.ServiceFeedback.Remove(feedback);
             await _context.SaveChangesAsync();
 
             return NoContent();

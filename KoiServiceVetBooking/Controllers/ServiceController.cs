@@ -17,7 +17,7 @@ namespace KoiServiceVetBooking.Controllers
         }
 
         //lấy danh sách dịch vụ
-        [HttpGet("index")]
+        [HttpGet("List")]
         public ActionResult<List<ServiceViewModel>> Index()
         {
             // Lấy danh sách dịch vụ từ database và chuyển thành ServiceViewModel

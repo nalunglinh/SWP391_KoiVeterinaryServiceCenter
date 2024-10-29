@@ -1,5 +1,6 @@
 ﻿using KoiServiceVetBooking.Entities;
 using KoiServiceVetBooking.Models;
+using KoiServiceVetBooking.Models.Appointment;
 using KoiServiceVetBooking.Models.Doctor;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -297,7 +298,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //book lịch hẹn với bác sĩ
         [HttpPost("Booking/{doctorId}")]
-        public ActionResult<DoctorListViewModel> Book(int doctorId, int workshiftId)
+        public async Task<ActionResult<DoctorBookingViewModel>> Book(int doctorId, int workshiftId, DoctorBookingViewModel model)
         {
             // Tìm bác sĩ
             var doctor = _context.Users.FirstOrDefault(s => s.UserId == doctorId);
@@ -317,15 +318,27 @@ namespace KoiServiceVetBooking.Controllers
             workShift.IsBooked = true;
             _context.SaveChanges();
 
-            var doctorViewModel = new DoctorListViewModel
+            var service = await _context.Services.FirstOrDefaultAsync(s => s.ServiceId == model.ServiceId);
+            if (service == null)
             {
-                DoctorId = doctor.UserId,
-                FullName = doctor.FullName,
-                Email = doctor.Email,
-                UserAddress = doctor.UserAddress ?? "Unknown doctor address",
+                return NotFound("Service not found.");
+            }
+
+            // Tạo lịch hẹn
+            var appointment = new Appointment
+            {
+                CustomerId = model.CustomerId,
+                DoctorId = model.DoctorId,
+                ServiceId = model.ServiceId,
+                AppointmentDate = model.AppointmentDate,
+                Place = model.Place ?? "No address provided",
+                Status = "pending" // Mặc định trạng thái là 'pending'
             };
 
-            return Ok(doctorViewModel);
+            await _context.Appointments.AddAsync(appointment);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Appointment created successfully.", appointmentId = appointment.AppointmentId });
         }
 
         [HttpPut("Appointment/Result")]

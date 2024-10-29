@@ -15,7 +15,7 @@ namespace KoiServiceVetBooking.Entities
         public DbSet<DoctorWorkshift> DoctorWorkshift { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Rating> Rating { get; set; }
-        public DbSet<Feedback> ServiceFeedbacks { get; set; }
+        public DbSet<Feedback> ServiceFeedback { get; set; }
         public DbSet<History> ServiceHistory { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Bills> Bills { get; set; }

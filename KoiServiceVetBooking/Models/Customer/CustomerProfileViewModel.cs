@@ -15,5 +15,7 @@ namespace KoiServiceVetBooking.Models
         public required string Phone { get; set; }
 
         public string? UserAddress { get; set; }
+        
+        public string? ImageUrl { get; set; }
     }
 }

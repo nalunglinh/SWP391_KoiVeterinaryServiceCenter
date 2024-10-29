@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace KoiServiceVetBooking.Models.Appointment
+namespace KoiServiceVetBooking.Models.Doctor
 {
-    public class CreateAppointmentViewModel
+    public class DoctorBookingViewModel
     {
-        public int AppointmentId { get; set;}
         public int CustomerId { get; set; }
         public int DoctorId { get; set; }
         public int ServiceId { get; set; }
         public DateTime AppointmentDate { get; set; }
         public string? Place { get; set; }
         public string? Description { get; set; }
+        
     }
-
 }

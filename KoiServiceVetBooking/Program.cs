@@ -16,7 +16,10 @@ namespace BookingVetKoi
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Thêm dịch vụ cho Controllers
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+            });
 
             // Cấu hình Authentication
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
@@ -36,8 +39,9 @@ namespace BookingVetKoi
             // Thêm dịch vụ CORS
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAllOrigins",
-                    policy => policy.AllowAnyOrigin()
+                options.AddPolicy("AllowLocalhost",
+                    builder => builder
+                                    .WithOrigins("http://localhost:5173")
                                     .AllowAnyMethod()
                                     .AllowAnyHeader());
             });
@@ -57,7 +61,7 @@ namespace BookingVetKoi
             }
 
             // Sử dụng CORS
-            app.UseCors("AllowAllOrigins");
+            app.UseCors("AllowLocalhost");
 
             // Kích hoạt xác thực và ủy quyền
             app.UseAuthentication();

@@ -21,58 +21,56 @@ namespace KoiServiceVetBooking.Controllers
             _context = context;
         }
 
-        //Create lịch hẹn 
-        [HttpPost("create-appointment")]
-        public async Task<ActionResult> CreateAppointment(CreateAppointmentViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        // //Create lịch hẹn 
+        // [HttpPost("create-appointment")]
+        // public async Task<ActionResult> CreateAppointment(CreateAppointmentViewModel model)
+        // {
+        //     if (!ModelState.IsValid)
+        //     {
+        //         return BadRequest(ModelState);
+        //     }
 
-            // Kiểm tra bác sĩ
-            var doctor = await _context.Users.FirstOrDefaultAsync(u => u.UserId == model.DoctorId && u.role == "Doctor");
-            if (doctor == null)
-            {
-                return NotFound("Doctor not found.");
-            }
+        //     // Kiểm tra bác sĩ
+        //     var doctor = await _context.Users.FirstOrDefaultAsync(u => u.UserId == model.DoctorId && u.role == "Doctor");
+        //     if (doctor == null)
+        //     {
+        //         return NotFound("Doctor not found.");
+        //     }
 
-            // Kiểm tra dịch vụ
-            var service = await _context.Services.FirstOrDefaultAsync(s => s.ServiceId == model.ServiceId);
-            if (service == null)
-            {
-                return NotFound("Service not found.");
-            }
+        //     // Kiểm tra dịch vụ
+        //     var service = await _context.Services.FirstOrDefaultAsync(s => s.ServiceId == model.ServiceId);
+        //     if (service == null)
+        //     {
+        //         return NotFound("Service not found.");
+        //     }
 
-            // Tạo lịch hẹn
-            var appointment = new Appointment
-            {
-                CustomerId = model.CustomerId,
-                DoctorId = model.DoctorId,
-                ServiceId = model.ServiceId,
-                AppointmentDate = model.AppointmentDate,
-                Place = model.Place ?? "No address provided",
-                Status = "pending" // Mặc định trạng thái là 'pending'
-            };
+        //     // Tạo lịch hẹn
+        //     var appointment = new Appointment
+        //     {
+        //         CustomerId = model.CustomerId,
+        //         DoctorId = model.DoctorId,
+        //         ServiceId = model.ServiceId,
+        //         AppointmentDate = model.AppointmentDate,
+        //         Place = model.Place ?? "No address provided",
+        //         Status = "pending" // Mặc định trạng thái là 'pending'
+        //     };
 
-            // Lưu vào database
-            await _context.Appointments.AddAsync(appointment);
-            await _context.SaveChangesAsync();
+        //     // Lưu vào database
+        //     await _context.Appointments.AddAsync(appointment);
+        //     await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Appointment created successfully.", appointmentId = appointment.AppointmentId });
+        //     return Ok(new { message = "Appointment created successfully.", appointmentId = appointment.AppointmentId });
 
-        }
+        // }
 
         //lấy list lịch hẹn
         [HttpGet("List-appointment")]
-        public async Task<ActionResult<List<Appointment>>> GetAppointments(int? appointmentId)
+        public async Task<ActionResult<List<CreateAppointmentViewModel>>> GetAppointments(int? appointmentId)
         {
-
             var query = _context.Appointments
                 .Include(a => a.Customer)
                 .Include(a => a.Doctor)
                 .Include(a => a.Service);
-
 
             if (appointmentId.HasValue)
             {
@@ -82,13 +80,37 @@ namespace KoiServiceVetBooking.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(new List<Appointment> { appointment }); // Trả về danh sách với một phần tử
+
+                var appointmentViewModel = new CreateAppointmentViewModel
+                {
+                    AppointmentId = appointment.AppointmentId,
+                    CustomerId = appointment.CustomerId,
+                    DoctorId = appointment.DoctorId,
+                    ServiceId = appointment.ServiceId,
+                    AppointmentDate = appointment.AppointmentDate,
+                    Place = appointment.Place,
+                    Description = appointment.Description
+                };
+
+                return Ok(new List<CreateAppointmentViewModel> { appointmentViewModel });
             }
 
-            // Nếu không có appointmentId, lấy tất cả các cuộc hẹn
+            // Nếu không có -> lấy tất cả
             var appointments = await query.ToListAsync();
-            return Ok(appointments);
+            var appointmentViewModels = appointments.Select(appointment => new CreateAppointmentViewModel
+            {
+                AppointmentId = appointment.AppointmentId,
+                CustomerId = appointment.CustomerId,
+                DoctorId = appointment.DoctorId,
+                ServiceId = appointment.ServiceId,
+                AppointmentDate = appointment.AppointmentDate,
+                Place = appointment.Place,
+                Description = appointment.Description
+            }).ToList();
+
+            return Ok(appointmentViewModels);
         }
+
 
 
         //lấy chi tiết lịch hẹn

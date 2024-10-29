@@ -32,7 +32,7 @@ namespace KoiServiceVetBooking.Controllers
             var service = await _context.Services.FindAsync(model.ServiceId);
             if (service == null)
             {
-                return BadRequest("Service not found.");
+                return BadRequest("Service not found!");
             }
 
             // Calculate surcharge based on service type and visit preference
@@ -93,22 +93,21 @@ namespace KoiServiceVetBooking.Controllers
         // Hàm tạo mã QR giả lập
         private string GenerateMockQRCode(string paymentId, decimal amount)
         {
-            // Giả lập URL mã QR bằng thông tin của ngân hàng BIDV và số tài khoản
-            var qrCodeUrl = $"https://mock-vietqr.com/generate?bankCode={bankCode}&accountNumber={accountNumber}&amount={(long)amount}&message=ThanhToanDichVu_{paymentId}";
+            var qrCodeUrl = $"https://img.vietqr.io/image/BIDV-39148219491-compact.png";
             return qrCodeUrl;
         }
 
         // Endpoint xử lý khi người dùng nhấn nút "book"
-        [HttpPost("vietqr/mock/pay")] // Ràng buộc phương thức HTTP POST
+        [HttpPost("vietqr/mock/pay")]
         public async Task<ActionResult> PayWithMockVietQR(int appointmentId, int customerId)
         {
             var appointment = await _context.Appointments
                 .Include(a => a.Service)
-                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId && a.Status == "booked");
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
 
             if (appointment == null)
             {
-                return NotFound("Không tìm thấy cuộc hẹn hoặc cuộc hẹn chưa được đặt.");
+                return NotFound("Appointment not found or appointment not yet booked!");
             }
 
             // Tạo bản ghi thanh toán giả lập
@@ -116,7 +115,7 @@ namespace KoiServiceVetBooking.Controllers
             {
                 CustomerId = customerId,
                 AppointmentId = appointment.AppointmentId,
-                PaymentMethod = "VietQR_Mock",
+                PaymentMethod = "VietQR",
                 PaymentStatus = "Pending",
                 Amount = appointment.Service.Price,
                 PaymentDate = DateTime.Now
@@ -132,18 +131,17 @@ namespace KoiServiceVetBooking.Controllers
         }
 
         // Endpoint để mô phỏng thanh toán thành công
-        [HttpGet("vietqr/mock/return")] // Ràng buộc phương thức HTTP GET
+        [HttpGet("vietqr/mock/return")]
         public IActionResult MockReturn(string paymentId)
         {
-            // Giả lập trạng thái thanh toán thành công
             var payment = _context.Payments.FirstOrDefault(p => p.PaymentId.ToString() == paymentId);
             if (payment == null)
             {
-                return NotFound("Không tìm thấy giao dịch.");
+                return NotFound("No transactions found!");
             }
 
             // Cập nhật trạng thái thanh toán
-            payment.PaymentStatus = "Completed";
+            payment.PaymentStatus = "Paid";
 
             // Tạo hóa đơn sau khi thanh toán thành công
             var bill = new Bills
@@ -159,7 +157,20 @@ namespace KoiServiceVetBooking.Controllers
             _context.Bills.Add(bill);
             _context.SaveChanges();
 
-            return Ok("Thanh toán giả lập thành công! Hóa đơn đã được tạo.");
+            return Ok("Payment successful! Invoice has been created.");
+        }
+
+        // Kiểm tra trạng thái thanh toán
+        [HttpGet("status/{paymentId}")]
+        public async Task<IActionResult> CheckPaymentStatus(int paymentId)
+        {
+            var payment = await _context.Payments.FindAsync(paymentId);
+            if (payment == null)
+            {
+                return NotFound("Payment not found.");
+            }
+
+            return Ok(new { PaymentId = payment.PaymentId, PaymentStatus = payment.PaymentStatus });
         }
     }
 }
