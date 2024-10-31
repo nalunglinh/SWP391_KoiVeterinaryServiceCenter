@@ -1,5 +1,6 @@
 using KoiServiceVetBooking.Entities;
 using KoiServiceVetBooking.Models;
+using KoiServiceVetBooking.Models.Appoinment;
 using KoiServiceVetBooking.Models.Appointment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,49 +22,7 @@ namespace KoiServiceVetBooking.Controllers
             _context = context;
         }
 
-        // //Create lịch hẹn 
-        // [HttpPost("create-appointment")]
-        // public async Task<ActionResult> CreateAppointment(CreateAppointmentViewModel model)
-        // {
-        //     if (!ModelState.IsValid)
-        //     {
-        //         return BadRequest(ModelState);
-        //     }
-
-        //     // Kiểm tra bác sĩ
-        //     var doctor = await _context.Users.FirstOrDefaultAsync(u => u.UserId == model.DoctorId && u.role == "Doctor");
-        //     if (doctor == null)
-        //     {
-        //         return NotFound("Doctor not found.");
-        //     }
-
-        //     // Kiểm tra dịch vụ
-        //     var service = await _context.Services.FirstOrDefaultAsync(s => s.ServiceId == model.ServiceId);
-        //     if (service == null)
-        //     {
-        //         return NotFound("Service not found.");
-        //     }
-
-        //     // Tạo lịch hẹn
-        //     var appointment = new Appointment
-        //     {
-        //         CustomerId = model.CustomerId,
-        //         DoctorId = model.DoctorId,
-        //         ServiceId = model.ServiceId,
-        //         AppointmentDate = model.AppointmentDate,
-        //         Place = model.Place ?? "No address provided",
-        //         Status = "pending" // Mặc định trạng thái là 'pending'
-        //     };
-
-        //     // Lưu vào database
-        //     await _context.Appointments.AddAsync(appointment);
-        //     await _context.SaveChangesAsync();
-
-        //     return Ok(new { message = "Appointment created successfully.", appointmentId = appointment.AppointmentId });
-
-        // }
-
-        //lấy list lịch hẹn
+        //lấy list lịch hẹn (Admin)
         [HttpGet("List-appointment")]
         public async Task<ActionResult<List<CreateAppointmentViewModel>>> GetAppointments(int? appointmentId)
         {
@@ -111,9 +70,7 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(appointmentViewModels);
         }
 
-
-
-        //lấy chi tiết lịch hẹn
+        //lấy chi tiết lịch hẹn (Admin, Doctor)
         [HttpGet("Detail/{appointmentId}")]
         public async Task<ActionResult<Appointment>> GetAppointmentById(int appointmentId)
         {
@@ -127,7 +84,7 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(appointment);
         }
 
-        //Update trạng thái đặt hẹn
+        //Update trạng thái đặt hẹn (Admin)
         [HttpPut("Update/status/{appointmentId}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateStatusAppointment(int appointmentId, Appointment appointment)
@@ -139,7 +96,7 @@ namespace KoiServiceVetBooking.Controllers
 
             if (appointment.Status == "Pending")
             {
-                appointment.Status = "Paid"; // Cập nhật trạng thái
+                appointment.Status = "Paid";
             }
 
             _context.Entry(appointment).State = EntityState.Modified;
@@ -160,7 +117,7 @@ namespace KoiServiceVetBooking.Controllers
             return NoContent();
         }
 
-        //delete lịch hẹn
+        //delete lịch hẹn (Admin)
         [HttpDelete("Delete/{appointmentId}")]
         public async Task<ActionResult> DeleteAppointment(int appointmentId)
         {
@@ -175,7 +132,7 @@ namespace KoiServiceVetBooking.Controllers
             return NoContent();
         }
 
-        //Update status lịch hẹn
+        //Update status lịch hẹn (Admin, Doctor)
         [HttpPatch("status/{appointmentId}")]
         public async Task<ActionResult> UpdateAppointmentStatus(int appointmentId, string status)
         {
@@ -191,18 +148,40 @@ namespace KoiServiceVetBooking.Controllers
             return NoContent();
         }
 
-        //lấy lịch sử hẹn
-        [HttpGet("history/{customerId}")]
-        public async Task<ActionResult<List<Appointment>>> GetAppointmentHistory(int customerId)
+        //với service = 1, đặt lịch hẹn không cần giờ cụ thể (Customer)
+        [HttpPost("Consult")] 
+        public async Task<ActionResult> CreateAppointmentNoTime([FromBody] AppointmentConsultViewModel model)
         {
-            var history = await _context.Appointments
-                .Where(a => a.CustomerId == customerId)
-                .ToListAsync();
+            var service = await _context.Services.FindAsync(model.ServiceId);
+            if (service == null)
+            {
+                return BadRequest("Service does not exist.");
+            }
 
-            return Ok(history);
+            if (model.ServiceId == 1)
+            {
+                var appointment = new Appointment
+                {
+                    CustomerId = model.CustomerId,
+                    DoctorId = model.DoctorId,
+                    ServiceId = model.ServiceId,
+                    AppointmentDate = model.AppointmentDate.Date,
+                    Description = model.Description,
+                    Status = "pending"
+                };
+
+                _context.Appointments.Add(appointment);
+                await _context.SaveChangesAsync();
+
+                return Ok("Appointment created successfully without specific time or workshift.");
+            }
+            else
+            {
+                return BadRequest("This service does not support appointments without specific time.");
+            }
         }
 
-        //gửi feedback lịch hẹn về hệ thống
+        //gửi feedback lịch hẹn về hệ thống (Customer)
         [HttpPost("feedback/{appointmentId}")]
         public async Task<ActionResult> SendFeedback(int appointmentId, string feedback)
         {
@@ -218,9 +197,22 @@ namespace KoiServiceVetBooking.Controllers
             return NoContent();
         }
 
+        //lấy lịch sử hẹn (Customer, Admin)
+        [HttpGet("history/{customerId}")]
+        public async Task<ActionResult<List<Appointment>>> GetAppointmentHistory(int customerId)
+        {
+            var history = await _context.Appointments
+                .Where(a => a.CustomerId == customerId)
+                .ToListAsync();
+
+            return Ok(history);
+        }
+
         private bool AppointmentExists(int appointmentId)
         {
             return _context.Appointments.Any(e => e.AppointmentId == appointmentId);
         }
+
+
     }
 }

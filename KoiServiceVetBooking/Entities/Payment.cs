@@ -20,7 +20,6 @@ namespace KoiServiceVetBooking.Entities
         public decimal Amount { get; set; }
         [Column("Payment_date")]
         public DateTime PaymentDate { get; set; } = DateTime.Now;
-        [Column("IsHomeVisit")]
-        public bool IsHomeVisit { get; set; } = false;
+        
     }
 }

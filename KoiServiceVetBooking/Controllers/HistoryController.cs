@@ -20,6 +20,7 @@ namespace KoiServiceVetBooking.Controllers
             _context = appDbcontext;
         }
 
+        //lấy danh sách lịch sử bởi id
         [HttpGet("{id}")]
         public async Task<ActionResult<History>> GetServiceHistoryById(int id)
         {
@@ -32,7 +33,7 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(serviceHistory);
         }
 
-        //Lấy danh sách tất cả các lịch sử giao dịch
+        //Lấy danh sách tất cả các lịch sử giao dịch (Customer, Admin)
         [HttpGet("Customer/{customerId}")]
         public async Task<ActionResult<HistoryViewModel>> GetHistoryByCustomerId(int customerId)
         {
@@ -59,7 +60,7 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(history);
         }
 
-        //Lấy thông tin chi tiết lịch sử giao dịch cụ thể dựa trên id
+        //Lấy thông tin chi tiết lịch sử giao dịch cụ thể dựa trên id (Customer, Admin)
         [HttpGet("{historyId}/Customer/{customerId}")]
         public async Task<ActionResult<HistoryViewModel>> GetHistoryDetails(int historyId, int customerId)
         {
@@ -87,7 +88,7 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(history);
         }
 
-        //Tạo lịch sử giao dịch mới
+        //Tạo lịch sử giao dịch mới (Customer)
         [HttpPost("CreateHistory/{customerId}")]
         public async Task<ActionResult> CreateHistory(int customerId, HistoryCreateViewModel model)
         {
@@ -120,7 +121,7 @@ namespace KoiServiceVetBooking.Controllers
             return Ok("Transaction history created successfully");
         }
 
-        //Xóa lịch sử
+        //Xóa lịch sử (Admin)
         [HttpDelete("DeleteHistory/{historyId}/Customer/{customerId}")]
         public async Task<ActionResult> DeleteHistory(int historyId, int customerId)
         {

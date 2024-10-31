@@ -21,7 +21,7 @@ namespace KoiServiceVetBooking.Entities
         [Column("Appointment_date")]
         public DateTime AppointmentDate { get; set; }
 
-        public required string Place { get; set; }
+        public string Place { get; set; }
 
         public string Status { get; set; } = "pending"; // Default value
 
@@ -40,5 +40,8 @@ namespace KoiServiceVetBooking.Entities
 
         [ForeignKey("ServiceId")]
         public virtual Service Service { get; set; }
+
+        [Column("IsHomeVisit")]
+        public bool IsHomeVisit { get; set; } = false;
     }
 }

@@ -56,8 +56,7 @@ namespace KoiServiceVetBooking.Controllers
                 PaymentMethod = model.PaymentMethod,
                 Amount = amount,
                 PaymentDate = DateTime.Now,
-                PaymentStatus = "Pending",
-                IsHomeVisit = model.IsHomeVisit 
+                PaymentStatus = "Pending"
             };
 
             _context.Payments.Add(payment);

@@ -22,7 +22,7 @@ namespace KoiServiceVetBooking.Controllers
             _context = appDbContext;
         }
 
-        // Lấy thông tin profile của Customer
+        // Lấy thông tin profile của Customer (Customer, Admin)
         [HttpGet("profile")]
         [Authorize(Roles = "Customer")]
         public async Task<ActionResult<CustomerProfileViewModel>> Profile()
@@ -46,7 +46,7 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(customerProfile);
         }
 
-        // Chỉnh sửa profile của Customer
+        // Chỉnh sửa profile của Customer (Customer, Admin)
         [HttpPut("edit-profile")]
         [Authorize(Roles = "Customer")]
         public async Task<ActionResult<string>> EditCustomerProfile(CustomerProfileViewModel model)
@@ -69,7 +69,7 @@ namespace KoiServiceVetBooking.Controllers
             return Ok("Profile updated successfully.");
         }
 
-        // tìm customer by ID
+        // tìm customer by ID (Customer, Admin, Doctor)
         [HttpGet("Profile/id/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CustomerProfileViewModel>> GetCustomerById(int id)

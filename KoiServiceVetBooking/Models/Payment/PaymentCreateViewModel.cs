@@ -16,6 +16,7 @@ namespace KoiServiceVetBooking.Models.Payment
     public required string Email { get; set; }
     public string? UserAddress { get; set; }
     public string? PaymentMethod { get; set; }
-    public bool IsHomeVisit { get; set; } = false; // Optional for service ID 3
+    public bool IsHomeVisit { get; set; } = false;
+    
     }
 }

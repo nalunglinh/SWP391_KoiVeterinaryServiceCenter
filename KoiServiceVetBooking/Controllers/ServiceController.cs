@@ -16,7 +16,7 @@ namespace KoiServiceVetBooking.Controllers
             _context = appDbcontext;
         }
 
-        //lấy danh sách dịch vụ
+        //lấy danh sách dịch vụ (Customer, Admin)
         [HttpGet("List")]
         public ActionResult<List<ServiceViewModel>> Index()
         {
@@ -31,7 +31,7 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(services);
         }
 
-        //book dịch vụ
+        //book dịch vụ (Customer)
         [HttpGet("book/{serviceId}")]
         public ActionResult<ServiceViewModel> Book(int serviceId)
         {
