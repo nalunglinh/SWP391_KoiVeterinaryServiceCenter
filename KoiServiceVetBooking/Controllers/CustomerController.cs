@@ -48,7 +48,7 @@ namespace KoiServiceVetBooking.Controllers
 
         // Chỉnh sửa profile của Customer (Customer, Admin)
         [HttpPut("edit-profile")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer,Admin,Doctor")]
         public async Task<ActionResult<string>> EditCustomerProfile(CustomerProfileViewModel model)
         {
             var userEmail = User.FindFirstValue(ClaimTypes.Name);
@@ -69,9 +69,9 @@ namespace KoiServiceVetBooking.Controllers
             return Ok("Profile updated successfully.");
         }
 
-        // tìm customer by ID (Customer, Admin, Doctor)
-        [HttpGet("Profile/id/{id}")]
-        [Authorize(Roles = "Admin")]
+        // tìm customer by ID (Admin, Doctor)
+        [HttpGet("Profile/Find/{id}")]
+        [Authorize(Roles = "Admin,Doctor")]
         public async Task<ActionResult<CustomerProfileViewModel>> GetCustomerById(int id)
         {
             var customer = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id && u.role == "Customer");

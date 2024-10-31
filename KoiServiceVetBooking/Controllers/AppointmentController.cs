@@ -22,8 +22,9 @@ namespace KoiServiceVetBooking.Controllers
             _context = context;
         }
 
-        //lấy list lịch hẹn (Admin)
+        //lấy list lịch hẹn (Admin, Doctor)
         [HttpGet("List-appointment")]
+        [Authorize(Roles = "Admin,Doctor")]
         public async Task<ActionResult<List<CreateAppointmentViewModel>>> GetAppointments(int? appointmentId)
         {
             var query = _context.Appointments
@@ -72,6 +73,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //lấy chi tiết lịch hẹn (Admin, Doctor)
         [HttpGet("Detail/{appointmentId}")]
+        [Authorize(Roles = "Customer,Admin,Doctor")]
         public async Task<ActionResult<Appointment>> GetAppointmentById(int appointmentId)
         {
             var appointment = await _context.Appointments.FindAsync(appointmentId);
@@ -119,6 +121,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //delete lịch hẹn (Admin)
         [HttpDelete("Delete/{appointmentId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteAppointment(int appointmentId)
         {
             var appointment = await _context.Appointments.FindAsync(appointmentId);
@@ -134,6 +137,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //Update status lịch hẹn (Admin, Doctor)
         [HttpPatch("status/{appointmentId}")]
+        [Authorize(Roles = "Admin,Doctor")]
         public async Task<ActionResult> UpdateAppointmentStatus(int appointmentId, string status)
         {
             var appointment = await _context.Appointments.FindAsync(appointmentId);
@@ -150,6 +154,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //với service = 1, đặt lịch hẹn không cần giờ cụ thể (Customer)
         [HttpPost("Consult")] 
+        [Authorize(Roles = "Customer")]
         public async Task<ActionResult> CreateAppointmentNoTime([FromBody] AppointmentConsultViewModel model)
         {
             var service = await _context.Services.FindAsync(model.ServiceId);
@@ -183,6 +188,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //gửi feedback lịch hẹn về hệ thống (Customer)
         [HttpPost("feedback/{appointmentId}")]
+        [Authorize(Roles = "Customer")]
         public async Task<ActionResult> SendFeedback(int appointmentId, string feedback)
         {
             var appointment = await _context.Appointments.FindAsync(appointmentId);
@@ -199,6 +205,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //lấy lịch sử hẹn (Customer, Admin)
         [HttpGet("history/{customerId}")]
+        [Authorize(Roles = "Customer,Admin,Doctor")]
         public async Task<ActionResult<List<Appointment>>> GetAppointmentHistory(int customerId)
         {
             var history = await _context.Appointments

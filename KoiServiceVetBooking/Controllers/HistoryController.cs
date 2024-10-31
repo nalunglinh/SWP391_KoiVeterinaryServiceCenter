@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using KoiServiceVetBooking.Entities;
 using KoiServiceVetBooking.Models.HIstory;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //lấy danh sách lịch sử bởi id
         [HttpGet("{id}")]
+        [Authorize(Roles = "Customer,Admin,Doctor")]
         public async Task<ActionResult<History>> GetServiceHistoryById(int id)
         {
             var serviceHistory = await _context.ServiceHistory.FindAsync(id);
@@ -35,6 +37,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //Lấy danh sách tất cả các lịch sử giao dịch (Customer, Admin)
         [HttpGet("Customer/{customerId}")]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<ActionResult<HistoryViewModel>> GetHistoryByCustomerId(int customerId)
         {
             // Tìm lịch sử giao dịch cho customer
@@ -60,8 +63,9 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(history);
         }
 
-        //Lấy thông tin chi tiết lịch sử giao dịch cụ thể dựa trên id (Customer, Admin)
+        //Lấy thông tin chi tiết lịch sử giao dịch cụ thể dựa trên id
         [HttpGet("{historyId}/Customer/{customerId}")]
+        [Authorize(Roles = "Customer,Admin,Doctor")]
         public async Task<ActionResult<HistoryViewModel>> GetHistoryDetails(int historyId, int customerId)
         {
             // Tìm chi tiết lịch sử giao dịch cho customer theo historyId
@@ -90,6 +94,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //Tạo lịch sử giao dịch mới (Customer)
         [HttpPost("CreateHistory/{customerId}")]
+        [Authorize(Roles = "Customer")]
         public async Task<ActionResult> CreateHistory(int customerId, HistoryCreateViewModel model)
         {
             // Kiểm tra xem customer có tồn tại hay không
@@ -123,6 +128,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //Xóa lịch sử (Admin)
         [HttpDelete("DeleteHistory/{historyId}/Customer/{customerId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteHistory(int historyId, int customerId)
         {
             var history = await _context.ServiceHistory

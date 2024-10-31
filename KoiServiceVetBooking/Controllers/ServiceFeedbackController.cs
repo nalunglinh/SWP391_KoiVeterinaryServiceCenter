@@ -22,6 +22,7 @@ namespace KoiServiceVetBooking.Controllers
 
         // tạo feedback
         [HttpPost("Submit-Feedback")]
+        [Authorize(Roles = "Customer")]
         public IActionResult SubmitFeedback([FromBody] FeedbackViewModel feedback)
         {
             if (!ModelState.IsValid)
@@ -75,6 +76,7 @@ namespace KoiServiceVetBooking.Controllers
 
         // list feedback
         [HttpGet("GetList")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Feedback>>> GetAllFeedbacks()
         {
             return await _context.ServiceFeedback.ToListAsync();
@@ -82,6 +84,7 @@ namespace KoiServiceVetBooking.Controllers
 
         // tìm feedback theo id
         [HttpGet("FindFeedback/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Feedback>> GetFeedback(int id)
         {
             var feedback = await _context.ServiceFeedback.FindAsync(id);
@@ -96,6 +99,7 @@ namespace KoiServiceVetBooking.Controllers
 
         // Xóa feedback
         [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteFeedback(int id)
         {
             var feedback = await _context.ServiceFeedback.FindAsync(id);

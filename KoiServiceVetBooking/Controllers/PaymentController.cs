@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using KoiServiceVetBooking.Models.Payment;
 using KoiServiceVetBooking.Models.HIstory;
+using Microsoft.AspNetCore.Authorization;
 
 namespace KoiServiceVetBooking.Controllers
 {
@@ -27,6 +28,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //tạo payment và lưu vào history
         [HttpPost("create")]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> CreatePayment(PaymentCreateViewModel model)
         {
             var service = await _context.Services.FindAsync(model.ServiceId);

@@ -22,6 +22,7 @@ namespace KoiServiceVetBooking.Controllers
 
         // tạo Doctor (Admin)
         [HttpPost("Create")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> CreateDoctor(DoctorCreateViewModel model)
         {
             if (!ModelState.IsValid)
@@ -64,6 +65,7 @@ namespace KoiServiceVetBooking.Controllers
 
         // Tìm bác sĩ theo ID (Admin)
         [HttpGet("Find/{doctorId}")]
+        [Authorize(Roles = "Admin,Doctor")]
         public ActionResult<DoctorListViewModel> GetDoctorById(int doctorId)
         {
             var doctor = _context.Users
@@ -88,6 +90,7 @@ namespace KoiServiceVetBooking.Controllers
 
          // chỉnh sửa Doctor (Admin)
         [HttpPut("Update/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateDoctor(int id, int workshiftId, DoctorEditViewModel model)
         {
             var doctor = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id && u.role == "Doctor");
@@ -120,6 +123,7 @@ namespace KoiServiceVetBooking.Controllers
 
         // xóa Doctor (Admin)
         [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteDoctor(int id)
         {
             var doctor = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id && u.role == "Doctor");
@@ -143,6 +147,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //Search doctor (Customer, Admin)
         [HttpGet("Search-Doctor")]
+        [Authorize(Roles = "Customer,Admin")]
         public ActionResult<List<DoctorListViewModel>> ListDoctor(string searchTerm)
         {
             // Lấy list doctor từ db
@@ -162,6 +167,7 @@ namespace KoiServiceVetBooking.Controllers
 
         // Get all doctors (Admin)
         [HttpGet("All-Doctors")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<DoctorListViewModel>>> ListAllDoctors()
         {
             var doctors = await _context.Users
@@ -180,6 +186,7 @@ namespace KoiServiceVetBooking.Controllers
 
         // Get doctors by service
         [HttpGet("List-by-Service/{serviceId}")]
+        [Authorize(Roles = "Customer,Admin,Doctor")]
         public async Task<ActionResult<List<DoctorListViewModel>>> ListDoctorsByService(int serviceId)
         {
             var doctors = await _context.DoctorsServices
@@ -198,6 +205,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //thông tin bác sĩ và thời gian làm việc (Customer, Doctor)
         [HttpGet("Profile/{doctorId}")]
+        [Authorize(Roles = "Customer,Admin,Doctor")]
         public ActionResult<DoctorProfileViewModel> GetDoctorProfile(int doctorId, DateTime ShiftDate)
         {
             var doctor = _context.Users.FirstOrDefault(u => u.UserId == doctorId);
@@ -247,6 +255,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //tạo workshift cho doctor (Admin)
         [HttpPost("Create-Workshift")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> CreateDoctorWorkshift([FromBody] WorkshiftCreateViewModel model)
         {
             var doctorExists = await _context.Users.AnyAsync(u => u.UserId == model.DoctorId && u.role == "Doctor");
@@ -287,6 +296,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //chỉnh sửa workshift (Admin)
         [HttpPut("Edit-Workshift")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> EditDoctorWorkshift([FromBody] WorkshiftEditViewModel model)
         {
             var doctorExists = await _context.Users.AnyAsync(u => u.UserId == model.DoctorId && u.role == "Doctor");
@@ -310,6 +320,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //xóa workshift (Admin)
         [HttpDelete("Delete-Workshift/{doctorId}/{workshiftId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteDoctorWorkshift(int doctorId, int workshiftId)
         {
             // Tìm workshift dựa trên doctorId và workshiftId
@@ -329,6 +340,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //List lịch làm việc available (Admin, Doctor)
         [HttpGet("List-Workshift/{doctorId}")]
+        [Authorize(Roles = "Customer,Admin,Doctor")]
         public ActionResult<List<DoctorWorkshift>> GetAvailableWorkshifts(int doctorId)
         {
             var workshifts = _context.DoctorWorkshift
@@ -340,6 +352,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //book lịch hẹn với bác sĩ (Customer)
         [HttpPost("Booking/{doctorId}")]
+        [Authorize(Roles = "Customer")]
         public async Task<ActionResult<DoctorBookingViewModel>> Book(int doctorId, int workshiftId, DoctorBookingViewModel model)
         {
             // Tìm bác sĩ
@@ -385,6 +398,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //cập nhật lại kết quả sau khi thăm khám (Doctor)
         [HttpPut("Appointment/Result")]
+        [Authorize(Roles = "Admin,Doctor")]
         public async Task<ActionResult> UpdateAppointmentResult([FromBody] AppointmentResultViewModel model)
         {
             if (!ModelState.IsValid)
