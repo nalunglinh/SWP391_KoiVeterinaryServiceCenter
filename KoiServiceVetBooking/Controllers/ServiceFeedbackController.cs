@@ -20,41 +20,53 @@ namespace KoiServiceVetBooking.Controllers
             _context = context;
         }
 
-        // tạo feedback
+        // Tạo feedback
         [HttpPost("Submit-Feedback")]
         [Authorize(Roles = "Customer")]
-        public IActionResult SubmitFeedback([FromBody] FeedbackViewModel feedback)
+        public async Task<IActionResult> SubmitFeedback([FromBody] FeedbackViewModel feedback)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var customer = _context.Users.FirstOrDefault(u => u.UserId == feedback.customerId && u.role == "Customer");
-            var doctor = _context.Users.FirstOrDefault(u => u.UserId == feedback.DoctorId && u.role == "Doctor");
+            var customer = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserId == feedback.CustomerId && u.role == "Customer");
+            var doctor = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserId == feedback.DoctorId && u.role == "Doctor");
+            var service = await _context.Services
+                .FirstOrDefaultAsync(s => s.ServiceId == feedback.ServiceId);
 
-            string customerName = customer != null ? customer.FullName : "Unknown Customer";
-            string doctorName = doctor != null ? doctor.FullName : "Unknown Doctor";
-
-            var serviceFeedback = new Feedback
+            // Kiểm tra thông tin khách hàng và bác sĩ
+            if (customer == null)
             {
-                Comment = feedback.Comment,
-                FeedbackDate = DateTime.Now,
-                DoctorId = feedback.DoctorId,
-                ServiceId = feedback.ServiceId,
-                CustomerId = feedback.customerId
-            };
+                return NotFound("Customer not found.");
+            }
 
-            _context.ServiceFeedback.Add(serviceFeedback);
-            _context.SaveChanges();
-
-            var service = _context.Services.FirstOrDefault(s => s.ServiceId == feedback.ServiceId);
+            if (doctor == null)
+            {
+                return NotFound("Doctor not found.");
+            }
 
             if (service == null)
             {
                 return BadRequest("Service not found.");
             }
 
+            // Tạo đối tượng feedback
+            var serviceFeedback = new Feedback
+            {
+                Comment = feedback.Comment,
+                FeedbackDate = DateTime.Now,
+                DoctorId = feedback.DoctorId,
+                CustomerId = feedback.CustomerId,
+                ServiceId = feedback.ServiceId
+            };
+
+            await _context.ServiceFeedback.AddAsync(serviceFeedback);
+            await _context.SaveChangesAsync();
+
+            // Nếu có RatingValue, thêm rating vào cơ sở dữ liệu
             if (feedback.RatingValue.HasValue)
             {
                 var rating = new Rating
@@ -66,13 +78,12 @@ namespace KoiServiceVetBooking.Controllers
                     Service = service
                 };
 
-                _context.Rating.Add(rating);
-                _context.SaveChanges();
+                await _context.Rating.AddAsync(rating);
+                await _context.SaveChangesAsync();
             }
-
-            // Trả về phản hồi thành công
             return Ok("Feedback submitted successfully.");
         }
+
 
         // list feedback
         [HttpGet("GetList")]
