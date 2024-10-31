@@ -86,38 +86,38 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(appointment);
         }
 
-        //Update trạng thái đặt hẹn (Admin)
-        [HttpPut("Update/status/{appointmentId}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> UpdateStatusAppointment(int appointmentId, Appointment appointment)
-        {
-            if (appointmentId != appointment.AppointmentId)
-            {
-                return BadRequest("ID lịch hẹn không khớp.");
-            }
+        // //Update trạng thái đặt hẹn (Admin)
+        // [HttpPut("Update/status/{appointmentId}")]
+        // [Authorize(Roles = "Admin")]
+        // public async Task<ActionResult> UpdateStatusAppointment(int appointmentId, Appointment appointment)
+        // {
+        //     if (appointmentId != appointment.AppointmentId)
+        //     {
+        //         return BadRequest("ID lịch hẹn không khớp.");
+        //     }
 
-            if (appointment.Status == "Pending")
-            {
-                appointment.Status = "Paid";
-            }
+        //     if (appointment.Status == "Pending")
+        //     {
+        //         appointment.Status = "Paid";
+        //     }
 
-            _context.Entry(appointment).State = EntityState.Modified;
+        //     _context.Entry(appointment).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AppointmentExists(appointmentId))
-                {
-                    return NotFound();
-                }
-                throw;
-            }
+        //     try
+        //     {
+        //         await _context.SaveChangesAsync();
+        //     }
+        //     catch (DbUpdateConcurrencyException)
+        //     {
+        //         if (!AppointmentExists(appointmentId))
+        //         {
+        //             return NotFound();
+        //         }
+        //         throw;
+        //     }
 
-            return NoContent();
-        }
+        //     return NoContent();
+        // }
 
         //delete lịch hẹn (Admin)
         [HttpDelete("Delete/{appointmentId}")]
@@ -184,6 +184,43 @@ namespace KoiServiceVetBooking.Controllers
             {
                 return BadRequest("This service does not support appointments without specific time.");
             }
+        }
+
+        // Hủy lịch hẹn
+        [HttpDelete("Cancel/{appointmentId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> CancelAppointment(int appointmentId)
+        {
+            // Tìm lịch hẹn
+            var appointment = await _context.Appointments.FindAsync(appointmentId);
+            if (appointment == null)
+            {
+                return NotFound("Appointment not found.");
+            }
+
+            // Cập nhật trạng thái lịch hẹn thành "cancel"
+            appointment.Status = "cancel";
+
+            // Tìm payment
+            var payment = await _context.Payments.FirstOrDefaultAsync(p => p.AppointmentId == appointmentId);
+            if (payment == null)
+            {
+                return BadRequest("No payment record found for this appointment.");
+            }
+
+            // Lưu vào lịch sử (ServiceHistory)
+            var serviceHistory = new History
+            {
+                PaymentId = payment.PaymentId,
+                CustomerId = appointment.CustomerId,
+                ServiceId = appointment.ServiceId,
+                AppointmentId = appointment.AppointmentId,
+            };
+            await _context.ServiceHistory.AddAsync(serviceHistory);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Appointment canceled successfully." });
         }
 
         //gửi feedback lịch hẹn về hệ thống (Customer)
