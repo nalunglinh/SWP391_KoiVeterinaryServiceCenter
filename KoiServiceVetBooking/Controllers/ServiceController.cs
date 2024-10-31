@@ -22,7 +22,6 @@ namespace KoiServiceVetBooking.Controllers
         [Authorize(Roles = "Customer,Admin,Doctor")]
         public ActionResult<List<ServiceViewModel>> Index()
         {
-            // Lấy danh sách dịch vụ từ database và chuyển thành ServiceViewModel
             var services = _context.Services.Select(s => new ServiceViewModel
             {
                 ServiceId = s.ServiceId,
@@ -33,5 +32,27 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(services);
         }
 
+        //book dịch vụ (Customer)
+        [HttpGet("bookService/{serviceId}")]
+        [Authorize(Roles = "Customer,Doctor")]
+        public ActionResult<ServiceViewModel> Book(int serviceId)
+        {
+            // Logic xử lý việc booking cho dịch vụ có ServiceId
+            var service = _context.Services.FirstOrDefault(s => s.ServiceId == serviceId);
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            // Trả về thông tin dịch vụ nếu tìm thấy
+            var serviceViewModel = new ServiceViewModel
+            {
+                ServiceId = service.ServiceId,
+                ServiceName = service.ServiceName,
+                Description = service.Description
+            };
+
+            return Ok(serviceViewModel);
+        }
     }
 }

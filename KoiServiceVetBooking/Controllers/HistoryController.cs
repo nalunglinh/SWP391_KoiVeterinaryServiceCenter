@@ -21,8 +21,8 @@ namespace KoiServiceVetBooking.Controllers
             _context = appDbcontext;
         }
 
-        //lấy danh sách lịch sử bởi id
-        [HttpGet("{id}")]
+        //lấy danh sách lịch sử từ id
+        [HttpGet("List/{id}")]
         [Authorize(Roles = "Customer,Admin,Doctor")]
         public async Task<ActionResult<History>> GetServiceHistoryById(int id)
         {
@@ -36,7 +36,7 @@ namespace KoiServiceVetBooking.Controllers
         }
 
         //Lấy danh sách tất cả các lịch sử giao dịch (Customer, Admin)
-        [HttpGet("Customer/{customerId}")]
+        [HttpGet("All-list/{customerId}")]
         [Authorize(Roles = "Customer,Admin")]
         public async Task<ActionResult<HistoryViewModel>> GetHistoryByCustomerId(int customerId)
         {
@@ -63,14 +63,14 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(history);
         }
 
-        //Lấy thông tin chi tiết lịch sử giao dịch cụ thể dựa trên id
-        [HttpGet("{historyId}/Customer/{customerId}")]
+        // Lấy thông tin lịch sử giao dịch của customer
+        [HttpGet("Customer/{customerId}")]
         [Authorize(Roles = "Customer,Admin,Doctor")]
-        public async Task<ActionResult<HistoryViewModel>> GetHistoryDetails(int historyId, int customerId)
+        public async Task<ActionResult<IEnumerable<HistoryViewModel>>> GetCustomerHistory(int customerId)
         {
-            // Tìm chi tiết lịch sử giao dịch cho customer theo historyId
-            var history = await _context.ServiceHistory
-                .Where(h => h.HistoryId == historyId && h.CustomerId == customerId)
+            // Tìm tất cả lịch sử giao dịch cho customer theo customerId
+            var historyList = await _context.ServiceHistory
+                .Where(h => h.CustomerId == customerId)
                 .Select(h => new HistoryViewModel
                 {
                     PaymentId = h.PaymentId,
@@ -82,52 +82,18 @@ namespace KoiServiceVetBooking.Controllers
                     AppointmentId = h.AppointmentId,
                     Description = h.Appointment.Description
                 })
-                .FirstOrDefaultAsync();
+                .ToListAsync();
 
-            if (history == null)
+            if (historyList == null || !historyList.Any())
             {
-                return NotFound("No transaction history found for this user");
+                return NotFound("No transaction history found for this user.");
             }
 
-            return Ok(history);
-        }
-
-        //Tạo lịch sử giao dịch mới (Customer)
-        [HttpPost("CreateHistory/{customerId}")]
-        [Authorize(Roles = "Customer")]
-        public async Task<ActionResult> CreateHistory(int customerId, HistoryCreateViewModel model)
-        {
-            // Kiểm tra xem customer có tồn tại hay không
-            var customer = await _context.Users.FirstOrDefaultAsync(u => u.UserId == customerId && u.role == "Customer");
-            if (customer == null)
-            {
-                return NotFound("No customers found");
-            }
-
-            // Kiểm tra xem thanh toán có tồn tại và hợp lệ không
-            var payment = await _context.Payments.FirstOrDefaultAsync(p => p.PaymentId == model.PaymentId && p.CustomerId == customerId);
-            if (payment == null)
-            {
-                return NotFound("Payment information not found");
-            }
-
-            // Tạo lịch sử giao dịch mới
-            var history = new History
-            {
-                PaymentId = model.PaymentId,
-                CustomerId = customerId,
-                ServiceId = model.ServiceId,
-                AppointmentId = model.AppointmentId
-            };
-
-            _context.ServiceHistory.Add(history);
-            await _context.SaveChangesAsync();
-
-            return Ok("Transaction history created successfully");
+            return Ok(historyList);
         }
 
         //Xóa lịch sử (Admin)
-        [HttpDelete("DeleteHistory/{historyId}/Customer/{customerId}")]
+        [HttpDelete("Delete/{historyId}/Customer/{customerId}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteHistory(int historyId, int customerId)
         {

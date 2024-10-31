@@ -31,29 +31,38 @@ namespace KoiServiceVetBooking.Controllers
         [Authorize(Roles = "Customer")]
         public async Task<IActionResult> CreatePayment(PaymentCreateViewModel model)
         {
-            var service = await _context.Services.FindAsync(model.ServiceId);
+            // Tìm lịch hẹn dựa trên AppointmentId
+            var appointment = await _context.Appointments
+                .FirstOrDefaultAsync(a => a.AppointmentId == model.AppointmentId);
+            
+            if (appointment == null)
+            {
+                return BadRequest("Appointment not found!");
+            }
+
+            // Lấy thông tin dịch vụ từ lịch hẹn
+            var service = await _context.Services.FindAsync(appointment.ServiceId);
             if (service == null)
             {
                 return BadRequest("Service not found!");
             }
 
-            // Calculate surcharge based on service type and visit preference
+            // Tính toán phụ phí thăm khám tại nhà
             decimal surcharge = 0;
-            if (model.ServiceId == 2)
+            if (appointment.ServiceId == 2)
             {
                 surcharge = service.Surcharge;
             }
-            else if (model.ServiceId == 3 && model.IsHomeVisit)
+            else if (appointment.ServiceId == 3 && model.IsHomeVisit)
             {
                 surcharge = service.Surcharge;
             }
-
-            // Calculate the total amount
             var amount = service.Price + surcharge;
 
+            // Tạo mới bản ghi thanh toán
             var payment = new Payment
             {
-                CustomerId = model.CustomerId,
+                CustomerId = appointment.CustomerId,
                 AppointmentId = model.AppointmentId,
                 PaymentMethod = model.PaymentMethod,
                 Amount = amount,
@@ -64,14 +73,14 @@ namespace KoiServiceVetBooking.Controllers
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
 
+            // Tạo bản ghi trong lịch sử dịch vụ
             var serviceHistory = new History
             {
                 PaymentId = payment.PaymentId,
-                CustomerId = model.CustomerId,
-                ServiceId = model.ServiceId,
+                CustomerId = appointment.CustomerId,
+                ServiceId = appointment.ServiceId,
                 AppointmentId = model.AppointmentId
             };
-
 
             _context.ServiceHistory.Add(serviceHistory);
             await _context.SaveChangesAsync();
@@ -117,7 +126,7 @@ namespace KoiServiceVetBooking.Controllers
                 CustomerId = customerId,
                 AppointmentId = appointment.AppointmentId,
                 PaymentMethod = "VietQR",
-                PaymentStatus = "Pending",
+                PaymentStatus = "Paid",
                 Amount = appointment.Service.Price,
                 PaymentDate = DateTime.Now
             };
@@ -173,5 +182,52 @@ namespace KoiServiceVetBooking.Controllers
 
             return Ok(new { PaymentId = payment.PaymentId, PaymentStatus = payment.PaymentStatus });
         }
+
+        //tạo Bill
+        [HttpPost("Bill/{paymentId}")]
+        [Authorize(Roles = "Customer")]
+        public async Task<ActionResult<BillViewModel>> Bill(int paymentId)
+        {
+            var payment = await _context.Payments.FindAsync(paymentId);
+            if (payment == null || payment.PaymentStatus != "Paid")
+            {
+                return BadRequest("Payment not found or not completed.");
+            }
+
+            var appointment = await _context.Appointments.FindAsync(payment.AppointmentId);
+            if (appointment == null)
+            {
+                return NotFound("Appointment not found.");
+            }
+
+            var bill = new Bills
+            {
+                CustomerId = payment.CustomerId,
+                PaymentId = payment.PaymentId,
+                AppointmentId = appointment.AppointmentId,
+                TotalAmount = payment.Amount,
+                BillDate = DateTime.Now,
+                BillStatus = "Paid"
+            };
+
+            await _context.Bills.AddAsync(bill);
+            await _context.SaveChangesAsync();
+
+            // Tạo đối tượng View Model để trả về
+            var billViewModel = new BillViewModel
+            {
+                BillId = bill.BillId,
+                CustomerId = bill.CustomerId,
+                AppointmentId = bill.AppointmentId,
+                TotalAmount = bill.TotalAmount,
+                BillDate = bill.BillDate,
+                BillStatus = bill.BillStatus,
+                FullName = (await _context.Users.FindAsync(payment.CustomerId))?.FullName,
+                ServiceName = (await _context.Services.FindAsync(appointment.ServiceId))?.ServiceName
+            };
+
+            return Ok(billViewModel);
+        }
+
     }
 }

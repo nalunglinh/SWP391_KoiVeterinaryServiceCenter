@@ -184,6 +184,33 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(doctors);
         }
 
+        // Phân công dịch vụ cho bác sĩ
+        [HttpPost("Service/{doctorId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AssignServicesToDoctor(DoctorServiceViewModel model)
+        {
+            // Kiểm tra bác sĩ có tồn tại không
+            var doctor = await _context.Users.FirstOrDefaultAsync(u => u.UserId == model.DoctorId && u.role == "Doctor");
+            if (doctor == null)
+            {
+                return NotFound("Doctor not found.");
+            }
+
+            // Tạo danh sách bác sĩ
+            var doctorServices = model.ServiceId.Select(serviceId => new DoctorService
+            {
+                DoctorId = model.DoctorId,
+                ServiceId = serviceId
+            });
+
+            await _context.DoctorsServices.AddRangeAsync(doctorServices);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Services assigned to doctor successfully.", 
+            doctorId = model.DoctorId, assignedServices = model.ServiceId });
+        }
+
+
         // Get doctors by service
         [HttpGet("List-by-Service/{serviceId}")]
         [Authorize(Roles = "Customer,Admin,Doctor")]
