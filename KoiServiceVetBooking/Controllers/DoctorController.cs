@@ -387,7 +387,7 @@ namespace KoiServiceVetBooking.Controllers
                 ServiceId = model.ServiceId,
                 AppointmentDate = model.AppointmentDate,
                 Place = model.Place ?? "No address provided",
-                Status = "pending" // Mặc định trạng thái là 'pending'
+                Status = "success"
             };
 
             await _context.Appointments.AddAsync(appointment);
