@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
@@ -12,13 +16,12 @@ namespace KoiServiceVetBooking.Entities
         [Column("Service_name")]
         public required string ServiceName { get; set; }
 
-        [Column("Description")]
         public required string Description { get; set; }
 
-        [Column("Price")]
-        public double Price { get; set; }
+        public decimal Price { get; set; }
 
-        [Column("Surcharge")]
-        public double Surcharge { get; set; }
+        public decimal Surcharge { get; set; }
+
+         public ICollection<Appointment> Appointments { get; set; }
     }
 }

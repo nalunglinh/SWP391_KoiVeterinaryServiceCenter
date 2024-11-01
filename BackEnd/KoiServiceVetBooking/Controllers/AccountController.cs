@@ -180,6 +180,7 @@ namespace KoiServiceVetBooking.Controllers
             // Chuyển thông tin vào ViewModel
             var customerProfileViewModel = new CustomerProfileViewModel
             {
+                UserId = user.UserId,
                 FullName = user.FullName,
                 Email = user.Email,
                 Phone = user.Phone,
