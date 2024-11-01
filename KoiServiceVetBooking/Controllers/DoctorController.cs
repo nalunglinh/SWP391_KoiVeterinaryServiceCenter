@@ -377,10 +377,10 @@ namespace KoiServiceVetBooking.Controllers
             return Ok(workshifts);
         }
 
-        //book lịch hẹn với bác sĩ (Customer)
-        [HttpPost("Booking/{doctorId}")]
+        //book lịch hẹn với bác sĩ (Customer) cho service 2 và 3 
+        [HttpPost("Booking/Service-2-3/{doctorId}")]
         [Authorize(Roles = "Customer")]
-        public async Task<ActionResult<DoctorBookingViewModel>> Book(int doctorId, int workshiftId, DoctorBookingViewModel model)
+        public async Task<ActionResult<DoctorBookingViewModel>> Book_Service23(int doctorId, int workshiftId, DoctorBookingViewModel model)
         {
             // Tìm bác sĩ
             var doctor = _context.Users.FirstOrDefault(s => s.UserId == doctorId);
@@ -414,8 +414,64 @@ namespace KoiServiceVetBooking.Controllers
                 ServiceId = model.ServiceId,
                 AppointmentDate = model.AppointmentDate,
                 Place = model.Place ?? "No address provided",
-                Status = "success"
+                Description = model.Description,
+                Status = "success",
+                IsHomeVisit = model.IsHomeVisit,
             };
+
+            //đánh dấu cho isBooked của workshift
+            workShift.IsBooked = true;
+            _context.DoctorWorkshift.Update(workShift);
+
+            await _context.Appointments.AddAsync(appointment);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Appointment created successfully.", appointmentId = appointment.AppointmentId });
+        }
+
+        //book lịch hẹn với bác sĩ (Customer) cho service 1
+        [HttpPost("Booking/Service-1/{doctorId}")]
+        [Authorize(Roles = "Customer")]
+        public async Task<ActionResult<DoctorBookingService1ViewModel>> Book_Service1(int doctorId, int workshiftId, DoctorBookingViewModel model)
+        {
+            // Tìm bác sĩ
+            var doctor = _context.Users.FirstOrDefault(s => s.UserId == doctorId);
+            if (doctor == null)
+            {
+                return NotFound();
+            }
+
+             var workShift = _context.DoctorWorkshift.FirstOrDefault(ws => 
+                ws.DoctorId == doctorId && ws.WorkshiftId == workshiftId && !ws.IsBooked);
+
+            if (workShift == null)
+            {
+                return BadRequest("The specified work shift is not available.");
+            }
+
+            workShift.IsBooked = true;
+            _context.SaveChanges();
+
+            var service = await _context.Services.FirstOrDefaultAsync(s => s.ServiceId == model.ServiceId);
+            if (service == null)
+            {
+                return NotFound("Service not found.");
+            }
+
+            // Tạo lịch hẹn
+            var appointment = new Appointment
+            {
+                CustomerId = model.CustomerId,
+                DoctorId = model.DoctorId,
+                ServiceId = model.ServiceId,
+                AppointmentDate = model.AppointmentDate,
+                Description = model.Description,
+                Status = "success",
+            };
+
+            //đánh dấu cho isBooked của workshift
+            workShift.IsBooked = true;
+            _context.DoctorWorkshift.Update(workShift);
 
             await _context.Appointments.AddAsync(appointment);
             await _context.SaveChangesAsync();

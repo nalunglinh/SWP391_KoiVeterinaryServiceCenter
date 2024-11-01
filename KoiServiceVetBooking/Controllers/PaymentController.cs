@@ -106,21 +106,27 @@ namespace KoiServiceVetBooking.Controllers
             var qrCodeUrl = $"https://img.vietqr.io/image/BIDV-39148219491-compact.png";
             return qrCodeUrl;
         }
-
+        
         // Endpoint xử lý khi người dùng nhấn nút "book"
         [HttpPost("vietqr/mock/pay")]
-        public async Task<ActionResult> PayWithMockVietQR(int appointmentId, int customerId)
+        public async Task<ActionResult> PayWithMockVietQR(int customerId)
         {
-            var appointment = await _context.Appointments
-                .Include(a => a.Service)
-                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
-
+            // Find the appointment by customer ID (assuming unique appointments per customer)
+            var appointment = await _context.Appointments.FirstOrDefaultAsync(a => a.CustomerId == customerId);
             if (appointment == null)
             {
-                return NotFound("Appointment not found or appointment not yet booked!");
+                return NotFound("Appointment not found.");
             }
 
-            // Tạo bản ghi thanh toán giả lập
+            // Check for existing payment to prevent duplicates
+            var existingPayment = await _context.Payments
+                .FirstOrDefaultAsync(p => p.AppointmentId == appointment.AppointmentId);
+            if (existingPayment != null)
+            {
+                return BadRequest("Payment has already been made for this appointment.");
+            }
+
+            // Create a new payment record
             var payment = new Payment
             {
                 CustomerId = customerId,
@@ -134,13 +140,16 @@ namespace KoiServiceVetBooking.Controllers
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
 
-            // Tạo mã QR giả lập
+            // Generate mock QR code URL
             string qrCodeUrl = GenerateMockQRCode(payment.PaymentId.ToString(), payment.Amount);
 
+            // Return the generated QR code URL
             return Ok(new { QRCodeUrl = qrCodeUrl });
         }
+        
 
-        // Endpoint để mô phỏng thanh toán thành công
+
+        //thanh toán thành công
         [HttpGet("vietqr/mock/return")]
         public IActionResult MockReturn(string paymentId)
         {
@@ -185,7 +194,7 @@ namespace KoiServiceVetBooking.Controllers
 
         //tạo Bill
         [HttpPost("Bill/{paymentId}")]
-        [Authorize(Roles = "Customer")]
+        // [Authorize(Roles = "Customer")]
         public async Task<ActionResult<BillViewModel>> Bill(int paymentId)
         {
             var payment = await _context.Payments.FindAsync(paymentId);
