@@ -211,7 +211,7 @@ namespace KoiServiceVetBooking.Controllers
         }
 
 
-        // Get doctors by service
+        // Get doctors bằng service
         [HttpGet("List-by-Service/{serviceId}")]
         [Authorize(Roles = "Customer,Admin,Doctor")]
         public async Task<ActionResult<List<DoctorListViewModel>>> ListDoctorsByService(int serviceId)
@@ -430,7 +430,7 @@ namespace KoiServiceVetBooking.Controllers
         }
 
         //book lịch hẹn với bác sĩ (Customer) cho service 1
-        [HttpPost("Booking/Service-1/{doctorId}")]
+        [HttpPost("Booking/service-1/{doctorId}")]
         [Authorize(Roles = "Customer")]
         public async Task<ActionResult<DoctorBookingService1ViewModel>> Book_Service1(int doctorId, int workshiftId, DoctorBookingViewModel model)
         {

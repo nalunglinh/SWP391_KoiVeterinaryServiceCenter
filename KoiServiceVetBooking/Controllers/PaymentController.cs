@@ -209,6 +209,13 @@ namespace KoiServiceVetBooking.Controllers
                 return NotFound("Appointment not found.");
             }
 
+            // Lấy thông tin của dịch vụ
+            var service = await _context.Services.FindAsync(appointment.ServiceId);
+            if (service == null)
+            {
+                return NotFound("Service not found.");
+            }
+
             var bill = new Bills
             {
                 CustomerId = payment.CustomerId,
@@ -231,8 +238,11 @@ namespace KoiServiceVetBooking.Controllers
                 TotalAmount = bill.TotalAmount,
                 BillDate = bill.BillDate,
                 BillStatus = bill.BillStatus,
-                FullName = (await _context.Users.FindAsync(payment.CustomerId))?.FullName,
-                ServiceName = (await _context.Services.FindAsync(appointment.ServiceId))?.ServiceName
+                FullName = (await _context.Users.FindAsync(payment.CustomerId)).FullName,
+                ServiceId = service.ServiceId,
+                ServiceName = service.ServiceName,
+                Price = service.Price,
+                Surcharge = service.Surcharge
             };
 
             return Ok(billViewModel);
