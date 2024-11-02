@@ -389,7 +389,8 @@ namespace KoiServiceVetBooking.Controllers
                 return NotFound();
             }
 
-             var workShift = _context.DoctorWorkshift.FirstOrDefault(ws => 
+             // Kiểm tra và đánh dấu work shift
+            var workShift = await _context.DoctorWorkshift.FirstOrDefaultAsync(ws =>
                 ws.DoctorId == doctorId && ws.WorkshiftId == workshiftId && !ws.IsBooked);
 
             if (workShift == null)
@@ -410,7 +411,7 @@ namespace KoiServiceVetBooking.Controllers
             var appointment = new Appointment
             {
                 CustomerId = model.CustomerId,
-                DoctorId = model.DoctorId,
+                DoctorId = doctorId,
                 ServiceId = model.ServiceId,
                 AppointmentDate = model.AppointmentDate,
                 Place = model.Place ?? "No address provided",
@@ -462,7 +463,7 @@ namespace KoiServiceVetBooking.Controllers
             var appointment = new Appointment
             {
                 CustomerId = model.CustomerId,
-                DoctorId = model.DoctorId,
+                DoctorId = doctorId,
                 ServiceId = model.ServiceId,
                 AppointmentDate = model.AppointmentDate,
                 Description = model.Description,

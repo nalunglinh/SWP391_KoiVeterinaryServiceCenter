@@ -29,11 +29,11 @@ namespace KoiServiceVetBooking.Controllers
         //tạo payment và lưu vào history
         [HttpPost("create")]
         [Authorize(Roles = "Customer")]
-        public async Task<IActionResult> CreatePayment(PaymentCreateViewModel model)
+        public async Task<IActionResult> CreatePayment(int appointmentId, [FromBody] PaymentCreateViewModel model)
         {
             // Tìm lịch hẹn dựa trên AppointmentId
             var appointment = await _context.Appointments
-                .FirstOrDefaultAsync(a => a.AppointmentId == model.AppointmentId);
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
             
             if (appointment == null)
             {
@@ -63,7 +63,7 @@ namespace KoiServiceVetBooking.Controllers
             var payment = new Payment
             {
                 CustomerId = appointment.CustomerId,
-                AppointmentId = model.AppointmentId,
+                AppointmentId = appointmentId,
                 PaymentMethod = model.PaymentMethod,
                 Amount = amount,
                 PaymentDate = DateTime.Now,
@@ -79,13 +79,13 @@ namespace KoiServiceVetBooking.Controllers
                 PaymentId = payment.PaymentId,
                 CustomerId = appointment.CustomerId,
                 ServiceId = appointment.ServiceId,
-                AppointmentId = model.AppointmentId
+                AppointmentId = appointmentId
             };
 
             _context.ServiceHistory.Add(serviceHistory);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetPaymentById), new { id = payment.PaymentId }, payment);
+             return CreatedAtAction(nameof(GetPaymentById), new { id = payment.PaymentId }, payment);
         }
 
         [HttpGet("{id}")]
