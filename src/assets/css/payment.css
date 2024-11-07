@@ -1,0 +1,100 @@
+/* payment.css */
+
+.payment-page {
+    padding: 40px; /* Tăng padding cho trang */
+    max-width: 800px; /* Tăng giới hạn chiều rộng của trang */
+    margin: auto; /* Căn giữa trang */
+    background-color: #f9f9f9; /* Màu nền trang */
+    border-radius: 8px; /* Bo góc trang */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+  }
+  
+  .page-title {
+    text-align: center; /* Căn giữa tiêu đề */
+    color: #333; /* Màu chữ */
+    font-size: 2rem; /* Kích thước chữ lớn hơn */
+    margin-bottom: 20px; /* Khoảng cách dưới tiêu đề */
+  }
+  
+  .page-description {
+    text-align: center; /* Căn giữa mô tả */
+    color: #666; /* Màu chữ nhạt */
+    font-size: 1.2rem; /* Kích thước chữ mô tả */
+    margin-bottom: 30px; /* Khoảng cách dưới mô tả */
+  }
+  
+  .payment-container {
+    display: flex; /* Sử dụng Flexbox để căn chỉnh các phần tử */
+    flex-direction: column; /* Sắp xếp theo cột */
+    gap: 20px; /* Khoảng cách giữa các phần tử */
+  }
+  
+  .input-group {
+    display: flex; /* Sử dụng Flexbox để căn chỉnh nhãn và trường nhập liệu */
+    flex-direction: column; /* Sắp xếp theo cột */
+  }
+  
+  .input-label {
+    margin-bottom: 10px; /* Khoảng cách giữa nhãn và trường nhập liệu */
+    font-weight: bold; /* Làm đậm nhãn */
+    font-size: 1rem; /* Kích thước chữ cho nhãn */
+  }
+  
+  .input-field {
+    padding: 15px; /* Tăng đệm cho trường nhập liệu */
+    border: 1px solid #ccc; /* Viền trường nhập liệu */
+    border-radius: 4px; /* Bo góc trường nhập liệu */
+    font-size: 1rem; /* Kích thước chữ */
+  }
+  
+  .total-section {
+    display: flex; /* Sử dụng Flexbox để căn chỉnh phần tổng */
+    justify-content: space-between; /* Căn giữa giữa tổng và giá trị */
+    align-items: center; /* Căn chỉnh chiều dọc */
+  }
+  
+  .total-label {
+    font-weight: bold; /* Làm đậm nhãn tổng */
+    font-size: 1.2rem; /* Kích thước chữ cho nhãn tổng */
+  }
+  
+  .total-amount {
+    color: #007bff; /* Màu sắc cho tổng */
+    font-size: 1.5rem; /* Kích thước chữ lớn hơn cho tổng */
+  }
+  
+  .submit-button {
+    align-self: flex-end; /* Đẩy nút thanh toán sang bên phải */
+    padding: 15px 30px; /* Tăng đệm cho nút */
+    background-color: #28a745; /* Màu nền nút */
+    color: white; /* Màu chữ nút */
+    border: none; /* Xóa viền */
+    border-radius: 4px; /* Bo góc nút */
+    cursor: pointer; /* Con trỏ chuột khi di chuột qua nút */
+    font-size: 1.2rem; /* Kích thước chữ cho nút */
+    transition: background-color 0.3s; /* Hiệu ứng chuyển màu nền */
+  }
+  
+  .submit-button:hover {
+    background-color: #218838; /* Màu nền khi di chuột qua nút */
+  }
+  
+  .payment-summary {
+    float: right;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 20px;
+    text-align: right;
+  }
+  
+  .payment-button {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  
+  .payment-button button {
+    padding: 10px 20px;
+    font-size: 1em;
+  }
+  

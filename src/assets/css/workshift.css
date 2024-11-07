@@ -1,0 +1,64 @@
+.workshift {
+    margin: 5px;
+}
+
+.workshift:hover {
+    background-color: tomato;
+}
+
+.tagList {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 15px;
+    justify-content: center;
+  }
+  
+  .tagList li {
+    padding: 8px;
+    margin-right: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+
+  }
+  .tagList li:hover {
+    padding: 8px;
+    margin-right: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: rgb(191, 220, 192);
+
+  }
+  .tagList li.available {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .monday {
+    background-color: #FFDDC1;
+  }
+  
+  .tuesday {
+    background-color: #FFE4C4;
+  }
+  
+  .wednesday {
+    background-color: #FFDAB9;
+  }
+  
+  .thursday {
+    background-color: #E0FFFF;
+  }
+  
+  .friday {
+    background-color: #B0E0E6;
+  }
+  
+  .saturday {
+    background-color: #AFEEEE;
+  }
+  
+  .sunday {
+    background-color: #E6E6FA;
+  }
+  

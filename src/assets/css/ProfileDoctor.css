@@ -1,0 +1,85 @@
+/* ProfileDoctor.css */
+
+.profile {
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  
+  .profile-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .profile-img img {
+    width: 150px; /* Kích thước hình ảnh */
+    height: 150px; /* Kích thước hình ảnh */
+    border-radius: 50%; /* Đường viền tròn cho ảnh bác sĩ */
+    object-fit: cover; /* Đảm bảo hình ảnh không bị méo */
+    margin-bottom: 20px; /* Khoảng cách dưới hình ảnh */
+  }
+  
+  .profile-info h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin: 10px 0;
+  }
+  
+  .profile-info p {
+    font-size: 16px;
+    color: #666;
+    margin: 5px 0;
+  }
+  
+  .doctor-actions {
+    margin-top: 20px;
+  }
+  
+  .book-doctor-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #000000; /* Màu xanh cho nút đặt bác sĩ */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .book-doctor-btn:hover {
+    background-color: #253c69; /* Màu xanh đậm hơn khi hover */
+  }
+  
+  .see-another-doctor-link {
+    margin-top: 10px;
+    color: #007bff; /* Màu xanh cho liên kết */
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .see-another-doctor-link:hover {
+    text-decoration: underline; /* Gạch chân khi hover */
+  }
+  
+  .footer {
+    margin-top: 20px;
+    padding: 10px;
+    text-align: center;
+    background-color: #f1f1f1;
+  }
+  

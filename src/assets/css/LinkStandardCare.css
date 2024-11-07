@@ -1,0 +1,22 @@
+.navigation-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Tạo khoảng cách giữa các nút */
+    margin-top: 20px;
+}
+
+.navigation-links .btn {
+    border: none; /* Bỏ viền */
+    background: none; /* Bỏ nền */
+    color:  salmon;/* Màu chữ (tùy chọn) */
+    text-decoration: none;
+    font-size: 1.1rem;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: color 0.3s ease; /* Hiệu ứng chuyển đổi màu */
+}
+
+.navigation-links .btn:hover {
+    color: rgb(40, 125, 254); /* Màu chữ khi hover */
+    text-decoration: underline;
+}

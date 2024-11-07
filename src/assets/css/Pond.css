@@ -1,0 +1,122 @@
+
+/* User Icon */
+.user-icon img {
+    width: 50px; 
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px; 
+}
+
+.user-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+
+/* Main container */
+
+
+
+
+/* Doctor Section */
+/* Doctor Section */
+.doctor-section {
+    width: 100%;
+    padding-left: 20px;
+}
+
+.doctor-section h2 {
+    font-size: 22px;
+    font-weight: normal;
+    color: #333;
+}
+
+
+
+.doctor-section input, .doctor-section select {
+    padding: 8px;
+    margin: 15px 0;
+    font-size: 14px;
+    width: 250px;
+}
+
+.doctor-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.doctor-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+.doctor-info {
+    width: 70%;
+}
+
+.doctor-info h3 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.doctor-info p {
+    font-size: 14px;
+    color: #777;
+    margin-top: 5px;
+}
+
+.appointment-times button {
+    background-color: #d9eaff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #333;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.book-now {
+    background-color: #ff7200;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Doctor Image - Make it Circular */
+.doctor-card img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.appointment-times button {
+    background-color: #d9eaff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #333;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.book-now {
+    background-color: #ff7200;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}

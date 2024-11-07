@@ -1,0 +1,155 @@
+
+aside {
+    width: 20%;
+    background-color: #1e40af; /* Deep Blue */
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+}
+
+aside ul {
+    list-style-type: none;
+}
+
+aside ul li {
+    margin-bottom: 25px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+aside ul li a {
+    text-decoration: none;
+    color: #cbd5e1; /* Lighter shade of white */
+}
+
+aside ul li a.active {
+    color: white;
+    font-weight: bold;
+}
+
+aside ul li a:hover {
+    color: #3b82f6; /* Light Blue */
+}
+
+.filter-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.filter-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    gap: 15px; /* Thêm khoảng cách giữa các ô */
+}
+
+.filter-section select,
+.filter-section input {
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #1e3a8a; /* Deep Blue border */
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.filter-section input::placeholder {
+    color: #64748b; /* Placeholder soft gray */
+}
+
+.filter-section select:focus, 
+.filter-section input:focus {
+    border-color: #3b82f6; /* Light Blue on focus */
+}
+
+
+.service-path {
+    color: #94a3b8; /* Soft gray for breadcrumb */
+    margin-bottom: 25px;
+}
+.service-path {
+    color: #94a3b8; /* Soft gray for breadcrumb */
+    margin-bottom: 25px;
+}
+
+.doctor-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
+/* Doctor Card */
+.doctor-card {
+    
+    width: 100%;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.doctor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); /* Elevated on hover */
+}
+
+.doctor-card img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 3px solid #1e3a8a; /* Deep Blue border */
+}
+
+.doctor-card h3 {
+    font-size: 20px;
+    margin-bottom: 5px;
+    color: #1e3a8a; /* Deep Blue for doctor name */
+}
+
+.doctor-card p {
+    
+    font-size: 14px;
+    color: #64748b; /* Soft gray for specialty */
+}
+
+.doctor-card .rating {
+    font-size: 16px;
+    color: #f59e0b; /* Bright gold for rating */
+    font-weight: bold;
+}
+
+
+.service-path {
+    color: #94a3b8; /* Soft gray for breadcrumb */
+    margin-bottom: 25px;
+}
+.service-path {
+    color: #94a3b8; /* Soft gray for breadcrumb */
+    margin-bottom: 25px;
+}
+
+.pagination {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.pagination span {
+    cursor: pointer;
+    padding: 10px 15px;
+    background-color: #1e3a8a; /* Deep Blue */
+    color: white;
+    border-radius: 6px;
+    transition: background-color 0.3s;
+}
+
+.pagination span:hover {
+    background-color: #3b82f6; /* Light Blue on hover */
+}
